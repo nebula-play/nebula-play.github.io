@@ -128,13 +128,21 @@
           "ru": "Драматург · Сценарист · Режиссёр"
         },
         "bio": {
-          "en": "Warsaw-based Polish-Russian filmmaker and playwright (VGIK). Raised in a theatrical dynasty — son of Margarita Terekhova, muse of Andrey Tarkovsky (Mirror). His sci-fi short Monument (2026) was selected at 49th Mill Valley Film Festival (CAFILM). Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Tes",
+          "en": "An independent filmmaker and writer based in Warsaw. Born into an acting dynasty, he discovered his passion for storytelling early. Growing up immersed in the craft of stage and screen shaped his artistic sensibilities long before his formal training at VGIK, Russia's national film school. Drawn to science fiction, he tells human stories with emotional depth and believes that art has the power to change the future.",
           "ru": "Независимый режиссёр и драматург польского происхождения в Варшаве (ВГИК). Вырос в театральной династии — сын актрисы Маргариты Тереховой (музы Андрея Тарковского в «Зеркале»). Автор сай-фай драмы «Monument» (2026, 49th Mill Valley Film Festival)."
         },
         "links": [
           {
             "label": "LinkedIn",
             "url": "https://www.linkedin.com/in/alexterex/"
+          },
+          {
+            "label": "Website",
+            "url": "https://archaeoterex.github.io/"
+          },
+          {
+            "label": "Instagram",
+            "url": "https://www.instagram.com/archaeoterex/"
           }
         ]
       },
