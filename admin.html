@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="dark">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data: blob:; connect-src 'self' https://api.github.com; base-uri 'self'; object-src 'none'; form-action 'none';">
   <title>Control Panel — NEBULA / Туманность</title>
   <link rel="stylesheet" href="css/admin.css">
 <script src="/_aistudio-iframe.js?v=29045eb3"></script></head>
@@ -15,33 +17,25 @@
     <header class="admin-header">
       <div class="admin-brand">
         <h1>Nebula Control Panel</h1>
-        <a href="index.html" class="back-link">← Open Site</a>
+        <a href="index.html" class="back-link">← Site</a>
+        <span class="dirty-indicator" id="dirty-indicator" hidden>Unsaved</span>
       </div>
       <div class="header-actions">
-        <button type="button" class="btn-action" id="btn-import" title="Import content.json from disk">Import</button>
-        <button type="button" class="btn-action" id="btn-export" title="Download backup of content.json">Export JSON</button>
-        <button type="button" class="btn-action" id="btn-download-zip" title="Download complete GitHub Pages static bundle (.zip)">Download ZIP</button>
-        <button type="button" class="btn-action" id="btn-preview" title="Preview local draft on the live site">Preview</button>
+        <button type="button" class="btn-action" id="btn-preview" title="Preview local changes before publishing">Preview</button>
         <button type="button" class="btn-action btn-action-primary" id="btn-publish" title="Commit data/content.json to GitHub">Publish</button>
-        <input type="file" id="import-file-input" accept=".json,application/json" hidden>
+        <div class="lang-filter" role="group" aria-label="Editor language">
+          <button type="button" class="lang-filter-btn is-active" data-edit-lang="en">EN</button>
+          <button type="button" class="lang-filter-btn" data-edit-lang="ru">RU</button>
+        </div>
       </div>
     </header>
-
-    <div class="toolbar-row">
-      <div class="lang-filter" role="group" aria-label="Editor language fields">
-        <button type="button" class="lang-filter-btn is-active" data-edit-lang="both">EN + RU</button>
-        <button type="button" class="lang-filter-btn" data-edit-lang="en">EN only</button>
-        <button type="button" class="lang-filter-btn" data-edit-lang="ru">RU only</button>
-      </div>
-      <div class="dirty-indicator" id="dirty-indicator" hidden>Unsaved local draft</div>
-    </div>
 
     <div class="tab-shell" data-active="hero">
       <nav class="tabs" role="tablist" aria-label="Content sections">
         <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-tab="hero" id="tab-hero">The Play</button>
         <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="creators" id="tab-creators">Creators</button>
         <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="showings" id="tab-showings">News &amp; Updates</button>
-        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="contacts" id="tab-contacts">Contact &amp; PDFs</button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="contacts" id="tab-contacts">Contact &amp; Footer</button>
         <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="nebula" id="tab-nebula">Nebula &amp; SEO</button>
         <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="github" id="tab-github">GitHub</button>
       </nav>
@@ -53,43 +47,32 @@
         <section class="tab-panel" id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></section>
         <section class="tab-panel" id="panel-nebula" role="tabpanel" aria-labelledby="tab-nebula" hidden></section>
         <section class="tab-panel" id="panel-github" role="tabpanel" aria-labelledby="tab-github" hidden>
-          <div class="field-grid-2">
+          <form id="gh-form" autocomplete="on">
+            <input type="hidden" name="username" autocomplete="username" value="nebula-play">
             <div class="field-wrap">
-              <label for="gh-owner">GitHub Owner</label>
-              <input type="text" id="gh-owner" placeholder="archaeoterex" spellcheck="false" autocapitalize="off">
+              <label for="gh-token">Fine-Grained Personal Access Token</label>
+              <div class="pass-wrap">
+                <input type="password" id="gh-token" name="password" placeholder="github_pat_..." autocomplete="current-password" spellcheck="false">
+                <button type="button" class="toggle-pass" id="toggle-token" aria-label="Show token" aria-pressed="false">
+                  <svg id="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
             </div>
-            <div class="field-wrap">
-              <label for="gh-repo">Repository Name</label>
-              <input type="text" id="gh-repo" placeholder="nebula-play" spellcheck="false" autocapitalize="off">
+
+            <div class="github-actions">
+              <button type="button" class="btn-action btn-action-primary" id="btn-push-folder" title="Select unpacked site folder from your computer and commit all files to GitHub">Push Local Folder</button>
+              <button type="button" class="btn-secondary-panel" id="btn-sync-gh">Sync from GitHub</button>
+              <button type="button" class="btn-secondary-panel" id="btn-download-zip" title="Download complete static site bundle (.zip)">Download Site ZIP</button>
+              <button type="button" class="btn-danger-panel" id="btn-clear-token">Clear Token</button>
             </div>
-          </div>
-
-          <div class="field-wrap">
-            <label for="gh-branch">Branch</label>
-            <input type="text" id="gh-branch" placeholder="main" spellcheck="false" autocapitalize="off">
-          </div>
-
-          <div class="field-wrap">
-            <label for="gh-token">Fine-Grained Personal Access Token</label>
-            <div class="pass-wrap">
-              <input type="password" id="gh-token" placeholder="github_pat_... or ghp_..." autocomplete="off" spellcheck="false">
-              <button type="button" class="toggle-pass" id="toggle-token" aria-label="Show token" aria-pressed="false">
-                <svg id="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="github-actions">
-            <button type="button" class="btn-secondary-panel" id="btn-sync-gh">Sync content.json from GitHub</button>
-            <button type="button" class="btn-danger-panel" id="btn-clear-token">Sign Out / Clear Token</button>
-          </div>
+          </form>
 
           <p class="field-hint">
-            Credentials stay strictly in <strong>localStorage</strong> on this browser. Required Fine-Grained PAT permission:
-            <strong>Contents: Read and write</strong> scoped only to this repository.
+            Target: <strong>nebula-play/nebula-play.github.io</strong> (<code>main</code>). Token stays in <strong>localStorage</strong> on this browser. Required PAT permission:
+            <strong>Contents: Read and write</strong>. Use <strong>Push Local Folder</strong> to commit unpacked HTML/CSS/JS/asset files from your computer in one commit.
           </p>
         </section>
       </div>
@@ -97,6 +80,7 @@
   </div>
 
   <input type="file" id="asset-upload-input" hidden>
+  <input type="file" id="folder-upload-input" webkitdirectory directory multiple hidden>
 
   <dialog id="confirm-dialog" class="confirm-dialog">
     <div class="confirm-box">

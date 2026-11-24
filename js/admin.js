@@ -1,15 +1,166 @@
 (function () {
   "use strict";
 
-  var GH_CONFIG_KEY = "nebula_gh_settings";
+  var GH_OWNER = "nebula-play";
+  var GH_REPO = "nebula-play.github.io";
+  var GH_BRANCH = "main";
   var GH_TOKEN_KEY = "nebula_gh_token";
   var DRAFT_KEY = "nebula_draft_preview_json";
   var DIRTY_KEY = "nebula_admin_dirty";
   var CONTENT_PATH = "data/content.json";
 
+  var DEFAULT_CONTENT = {
+    schemaVersion: 13,
+    settings: {
+      defaultLang: "en",
+      seo: {
+        en: {
+          title: "NEBULA — A Metaphysical Sci-Fi Play by Alex Terex",
+          description: "Inspired by Ray Bradbury. A metaphysical dramedy about two parents, a quantumograph malfunction, and a child born as a cloud of probability."
+        },
+        ru: {
+          title: "ТУМАННОСТЬ — Метафизическая сай-фай пьеса Александра Терехова",
+          description: "Пьеса, вдохновлённая творчеством Рэя Брэдбери. Метафизическая драмедия о родителях и ребёнке в квантовой суперпозиции."
+        }
+      },
+      nebula: {
+        intensity: 1.12,
+        speed: 0.78,
+        cursorInfluence: 0.35,
+        bgColor: "#04050a",
+        coreColor: "#22e6f0",
+        flareColor: "#f46825",
+        violetColor: "#8a3ffc",
+        roseColor: "#e83b8c"
+      }
+    },
+    ui: {
+      nav: {
+        overview: { en: "The Play", ru: "О пьесе" },
+        creators: { en: "Creators", ru: "Создатели" },
+        showings: { en: "News", ru: "Новости" }
+      },
+      labels: {
+        tickets: { en: "Inquire", ru: "Связаться" },
+        copied: { en: "Email copied to clipboard", ru: "Почта скопирована" },
+        emptyShowings: { en: "Updates coming soon.", ru: "Новости появятся скоро." },
+        footerNote: { en: "Warsaw / Berlin", ru: "Варшава / Берлин" }
+      }
+    },
+    hero: {
+      title: { en: "NEBULA", ru: "ТУМАННОСТЬ" },
+      subtitle: {
+        en: "A Play by Alex Terex · Inspired by Ray Bradbury",
+        ru: "Пьеса Александра Терехова · Вдохновлено Рэем Брэдбери"
+      }
+    },
+    about: {
+      cards: [
+        {
+          kicker: { en: "01. Premise", ru: "01. Завязка" },
+          title: { en: "A Glitch in Decoherence", ru: "Сбой декогеренции" },
+          text: {
+            en: "In a sterile future of automated childbirth, a quantumograph error freezes their infant in permanent superposition — luminous, vocal, yet formless.",
+            ru: "В стерильном будущем сбой квантомографа оставляет новорождённого в вечной суперпозиции — светящегося, звучащего, но лишённого тела."
+          }
+        },
+        {
+          kicker: { en: "02. Stage", ru: "02. Сцена" },
+          title: { en: "Postdramatic & Digital Score", ru: "Постдрама и реактивный свет" },
+          text: {
+            en: "Minimalist architecture: a translucent scrim, modular cubes, spatial sound, and live light projection responding in real time to actors’ voices and movement.",
+            ru: "Строгий минимализм: полупрозрачная пелена, серые кубы, пространственный звук и интерактивный свет, реагирующий на голос и движение перформеров."
+          }
+        },
+        {
+          kicker: { en: "03. DNA", ru: "03. Вдохновение" },
+          title: { en: "Bradbury Meets Physics", ru: "Брэдбери и современная наука" },
+          text: {
+            en: "Humanistic sci-fi meets cosmology and neuropsychology — turning scientific metaphors into raw theatrical intimacy.",
+            ru: "Гуманистическая фантастика на языке квантовой физики и нейропсихологии — точные метафоры человеческой уязвимости."
+          }
+        }
+      ]
+    },
+    creators: {
+      items: [
+        {
+          id: "alex-terex",
+          visible: true,
+          photo: "",
+          name: { en: "Aleksandr Terekhov (Alex Terex)", ru: "Александр Терехов (Alex Terex)" },
+          role: { en: "Playwright · Screenwriter · Director", ru: "Драматург · Сценарист · Режиссёр" },
+          bio: {
+            en: "Warsaw-based Polish-Russian filmmaker and playwright (VGIK). Raised in a theatrical dynasty — son of Margarita Terekhova, muse of Andrey Tarkovsky (Mirror). His sci-fi short Monument (2026) was selected at 49th Mill Valley Film Festival (CAFILM).",
+            ru: "Независимый режиссёр и драматург польского происхождения в Варшаве (ВГИК). Вырос в театральной династии — сын актрисы Маргариты Тереховой (музы Андрея Тарковского в «Зеркале»). Автор сай-фай драмы «Monument» (2026, 49th Mill Valley Film Festival)."
+          },
+          links: [{ label: "LinkedIn", url: "https://www.linkedin.com/in/alexterex/" }]
+        },
+        {
+          id: "co-director",
+          visible: true,
+          photo: "",
+          name: { en: "Co-Director (TBC)", ru: "Сорежиссёр (TBC)" },
+          role: { en: "Physical Theatre & Choreography", ru: "Физический театр и хореография" },
+          bio: {
+            en: "Collaborative staging partner shaping the somatic score of the performance — bridging the absurd physical comedy of 'Dance of Love' and the ecstatic ensemble choreography of 'Dance of Everything'.",
+            ru: "Партнёр по сорежиссуре, отвечающий за телесную партитуру спектакля — от абсурдной пластики «Танца Любви» до финального «Танца Всего»."
+          },
+          links: []
+        }
+      ]
+    },
+    showings: {
+      items: [
+        {
+          id: "script-2026",
+          visible: true,
+          dateLabel: { en: "2026", ru: "2026" },
+          city: { en: "Warsaw", ru: "Варшава" },
+          title: { en: "Play & Producer Dossier Ready", ru: "Пьеса и досье готовы" },
+          description: {
+            en: "Completed script and bilingual pitch decks available for theatres.",
+            ru: "Текст пьесы и презентации на двух языках готовы для театров."
+          },
+          ticketLabel: { en: "Inquire", ru: "Связаться" },
+          ticketUrl: "mailto"
+        },
+        {
+          id: "dock11-2027",
+          visible: true,
+          dateLabel: { en: "Spring 2027", ru: "Весна 2027" },
+          city: { en: "Berlin, DE", ru: "Берлин, DE" },
+          title: { en: "Digital Lab at DOCK 11", ru: "Лаборатория в DOCK 11" },
+          description: {
+            en: "Four-week residency testing reactive light, audio, and a 25-min WIP.",
+            ru: "Месячная лаборатория реактивного света, звука и 25-минутный эскиз."
+          },
+          ticketLabel: { en: "Partner / Inquire", ru: "Сотрудничество" },
+          ticketUrl: "mailto"
+        },
+        {
+          id: "premiere-2028",
+          visible: true,
+          dateLabel: { en: "2027 – 2028", ru: "2027 – 2028" },
+          city: { en: "Europe", ru: "Европа" },
+          title: { en: "International Stage Premiere", ru: "Международная премьера" },
+          description: {
+            en: "Full-length touring premiere co-directed with a physical theatre partner.",
+            ru: "Полнометражная постановка с партнёром по физическому театру."
+          },
+          ticketLabel: { en: "", ru: "" },
+          ticketUrl: ""
+        }
+      ]
+    },
+    contacts: {
+      email: "termist@gmail.com"
+    }
+  };
+
   var state = {
     data: null,
-    editLang: "both",
+    editLang: "en",
     dirty: false,
     busy: false,
     pendingUpload: null
@@ -239,7 +390,7 @@
       upBtn.className = "btn-upload-inline";
       upBtn.textContent = opts.uploadLabel || "Upload";
       upBtn.addEventListener("click", function () {
-        triggerAssetUpload(opts.uploadFolder, opts.accept || "image/*,.pdf", function (uploadedPath) {
+        triggerAssetUpload(opts.uploadFolder, opts.accept || "image/*", function (uploadedPath) {
           input.value = uploadedPath;
           opts.onChange(uploadedPath);
           updateCounter();
@@ -313,6 +464,25 @@
     return h;
   }
 
+  function setSvgChildren(svgEl, specs) {
+    svgEl.replaceChildren();
+    specs.forEach(function (spec) {
+      var node = document.createElementNS("http://www.w3.org/2000/svg", spec[0]);
+      var attrs = spec[1];
+      Object.keys(attrs).forEach(function (k) { node.setAttribute(k, attrs[k]); });
+      svgEl.appendChild(node);
+    });
+  }
+
+  function createMiniSvg(specs) {
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 12 12");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    setSvgChildren(svg, specs);
+    return svg;
+  }
+
   function createCardControls(list, index, rerenderFn) {
     var actions = document.createElement("div");
     actions.className = "item-actions";
@@ -322,7 +492,7 @@
     upBtn.className = "btn-card-ctrl";
     upBtn.title = "Move up";
     upBtn.disabled = index === 0;
-    upBtn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="6,2.2 10.5,9.5 1.5,9.5" fill="currentColor"/></svg>';
+    upBtn.appendChild(createMiniSvg([["polygon", { points: "6,2.2 10.5,9.5 1.5,9.5", fill: "currentColor" }]]));
     upBtn.addEventListener("click", function () {
       if (index === 0) return;
       var tmp = list[index - 1];
@@ -337,7 +507,7 @@
     downBtn.className = "btn-card-ctrl";
     downBtn.title = "Move down";
     downBtn.disabled = index === list.length - 1;
-    downBtn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="1.5,2.5 10.5,2.5 6,9.8" fill="currentColor"/></svg>';
+    downBtn.appendChild(createMiniSvg([["polygon", { points: "1.5,2.5 10.5,2.5 6,9.8", fill: "currentColor" }]]));
     downBtn.addEventListener("click", function () {
       if (index >= list.length - 1) return;
       var tmp = list[index + 1];
@@ -351,7 +521,7 @@
     delBtn.type = "button";
     delBtn.className = "btn-card-ctrl";
     delBtn.title = "Remove";
-    delBtn.innerHTML = '<svg viewBox="0 0 12 12"><path d="M2.5 2.5L9.5 9.5M9.5 2.5L2.5 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    delBtn.appendChild(createMiniSvg([["path", { d: "M2.5 2.5L9.5 9.5M9.5 2.5L2.5 9.5", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round" }]]));
     delBtn.addEventListener("click", function () {
       list.splice(index, 1);
       rerenderFn();
@@ -665,37 +835,22 @@
     panel.replaceChildren();
     var d = state.data;
     ensurePath(d, ["contacts", "email"], "");
-    ensurePath(d, ["contacts", "pitchEnUrl"], "assets/docs/Nebula-EN.pdf");
-    ensurePath(d, ["contacts", "pitchRuUrl"], "assets/docs/Nebula-RU.pdf");
+    if (d.contacts) {
+      delete d.contacts.pitchEnUrl;
+      delete d.contacts.pitchRuUrl;
+    }
     ensurePath(d, ["ui", "labels", "footerNote"], { en: "Warsaw / Berlin", ru: "Варшава / Берлин" });
 
     panel.append(
       createHeading("Single Contact & Footer"),
       createField({
-        label: "Contact Email (Used in Hero CTA, Showings & Footer)",
+        label: "Contact Email (Used in News & Footer)",
         type: "email",
         value: d.contacts.email || "",
         placeholder: "name@domain.com",
         onChange: function (v) { d.contacts.email = v.trim(); }
       }),
-      createBilingualField({ label: "Footer Location / Note", target: d.ui.labels.footerNote }),
-      createHeading("Downloadable Pitch Decks (PDF)"),
-      createField({
-        label: "Pitch Deck EN Path / URL",
-        value: d.contacts.pitchEnUrl || "",
-        uploadFolder: "assets/docs",
-        uploadLabel: "Upload EN PDF",
-        accept: ".pdf,application/pdf",
-        onChange: function (v) { d.contacts.pitchEnUrl = v; }
-      }),
-      createField({
-        label: "Pitch Deck RU Path / URL",
-        value: d.contacts.pitchRuUrl || "",
-        uploadFolder: "assets/docs",
-        uploadLabel: "Upload RU PDF",
-        accept: ".pdf,application/pdf",
-        onChange: function (v) { d.contacts.pitchRuUrl = v; }
-      })
+      createBilingualField({ label: "Footer Location / Note", target: d.ui.labels.footerNote })
     );
   }
 
@@ -839,21 +994,13 @@
 
   /* GitHub Settings & Contents API */
   function getGhSettings() {
-    var owner = el("gh-owner").value.trim();
-    var repo = el("gh-repo").value.trim();
-    var branch = el("gh-branch").value.trim() || "main";
     var token = el("gh-token").value.trim();
-    return { owner: owner, repo: repo, branch: branch, token: token };
+    return { owner: GH_OWNER, repo: GH_REPO, branch: GH_BRANCH, token: token };
   }
 
   function saveGhSettings() {
     var s = getGhSettings();
     try {
-      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({
-        owner: s.owner,
-        repo: s.repo,
-        branch: s.branch
-      }));
       if (s.token) {
         localStorage.setItem(GH_TOKEN_KEY, s.token);
       } else {
@@ -864,19 +1011,8 @@
 
   function loadGhSettings() {
     try {
-      var raw = localStorage.getItem(GH_CONFIG_KEY);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        if (parsed.owner) el("gh-owner").value = parsed.owner;
-        if (parsed.repo) el("gh-repo").value = parsed.repo;
-        el("gh-branch").value = parsed.branch || "main";
-      } else {
-        el("gh-branch").value = "main";
-      }
       el("gh-token").value = localStorage.getItem(GH_TOKEN_KEY) || "";
-    } catch (e) {
-      el("gh-branch").value = "main";
-    }
+    } catch (e) { /* ignore */ }
   }
 
   function ghHeaders(token) {
@@ -956,12 +1092,31 @@
     return await res.json();
   }
 
-  function validateGhConfig(cfg) {
-    if (!cfg.owner || !cfg.repo) {
-      switchTab("github");
-      showStatus("Enter GitHub Owner and Repository", "err", 4000);
-      return false;
+  function sanitizeParsedJson(val) {
+    if (Array.isArray(val)) {
+      return val.map(sanitizeParsedJson);
     }
+    if (val && typeof val === "object") {
+      var clean = {};
+      Object.keys(val).forEach(function (k) {
+        if (k === "__proto__" || k === "constructor" || k === "prototype") return;
+        clean[k] = sanitizeParsedJson(val[k]);
+      });
+      return clean;
+    }
+    return val;
+  }
+
+  function normalizeLoadedContent(raw) {
+    var clean = sanitizeParsedJson(raw);
+    if (clean && clean.contacts && typeof clean.contacts === "object") {
+      delete clean.contacts.pitchEnUrl;
+      delete clean.contacts.pitchRuUrl;
+    }
+    return clean;
+  }
+
+  function validateGhConfig(cfg) {
     if (!cfg.token) {
       switchTab("github");
       showStatus("Enter GitHub Fine-Grained PAT", "err", 4000);
@@ -983,7 +1138,10 @@
         throw new Error("data/content.json not found in repository");
       }
       var decoded = fromBase64Utf8(remote.content);
-      var parsed = JSON.parse(decoded);
+      var parsed = normalizeLoadedContent(JSON.parse(decoded));
+      if (!parsed || typeof parsed !== "object" || !parsed.hero) {
+        throw new Error("Invalid remote content.json structure");
+      }
       state.data = parsed;
       renderAllPanels();
       markDirty(false);
@@ -1028,7 +1186,8 @@
     return String(name || "file")
       .toLowerCase()
       .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9._-]/g, "");
+      .replace(/[^a-z0-9._-]/g, "")
+      .replace(/^[.-]+/, "");
   }
 
   function triggerAssetUpload(folder, accept, onDone) {
@@ -1076,6 +1235,321 @@
     }
   }
 
+  /* Push Unpacked Local Folder (atomic single commit via Git Data API) */
+  var FOLDER_ALLOWED_EXACT = {
+    "index.html": true,
+    "admin.html": true,
+    "cname": true,
+    ".nojekyll": true,
+    "robots.txt": true,
+    "sitemap.xml": true
+  };
+  var FOLDER_ALLOWED_EXT_RE = /\.(html|css|js|json|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|txt|xml|webmanifest)$/i;
+  var FOLDER_IGNORED_SEGMENTS = {
+    ".git": true,
+    "node_modules": true,
+    "dist": true,
+    "__macosx": true
+  };
+  var FOLDER_IGNORED_FILES = {
+    ".ds_store": true,
+    "thumbs.db": true,
+    "desktop.ini": true
+  };
+
+  async function ghApiRequest(cfg, apiSubpath, options) {
+    var url = "https://api.github.com/repos/" +
+      encodeURIComponent(cfg.owner) + "/" +
+      encodeURIComponent(cfg.repo) + "/" + apiSubpath;
+    var reqHeaders = ghHeaders(cfg.token);
+    if (options && options.body) {
+      reqHeaders["Content-Type"] = "application/json";
+    }
+    var res = await fetch(url, {
+      method: (options && options.method) || "GET",
+      headers: reqHeaders,
+      body: options && options.body ? JSON.stringify(options.body) : undefined,
+      cache: "no-store"
+    });
+    if (res.status === 401 || res.status === 403) {
+      throw new Error("Invalid token or missing Contents write permission");
+    }
+    if (!res.ok) {
+      var errText = "";
+      try {
+        var errJson = await res.json();
+        errText = errJson.message ? ": " + errJson.message : "";
+      } catch (e) { /* ignore */ }
+      throw new Error("GitHub API error (" + res.status + ")" + errText);
+    }
+    return await res.json();
+  }
+
+  async function computeGitBlobSha1(bytes) {
+    if (typeof crypto === "undefined" || !crypto.subtle || !crypto.subtle.digest) {
+      return null;
+    }
+    var header = new TextEncoder().encode("blob " + bytes.length + "\0");
+    var combined = new Uint8Array(header.length + bytes.length);
+    combined.set(header, 0);
+    combined.set(bytes, header.length);
+    var hashBuf = await crypto.subtle.digest("SHA-1", combined);
+    var hashBytes = new Uint8Array(hashBuf);
+    var hex = "";
+    for (var i = 0; i < hashBytes.length; i++) {
+      hex += (hashBytes[i] < 16 ? "0" : "") + hashBytes[i].toString(16);
+    }
+    return hex;
+  }
+
+  function isSafeSiteRelativePath(relPath) {
+    if (!relPath || relPath.indexOf("..") !== -1 || relPath.indexOf("\\") !== -1) return false;
+    var segments = relPath.split("/");
+    for (var i = 0; i < segments.length; i++) {
+      var seg = segments[i];
+      if (!seg || seg === "." || seg === "..") return false;
+      var lowerSeg = seg.toLowerCase();
+      if (FOLDER_IGNORED_SEGMENTS[lowerSeg]) return false;
+      if (i < segments.length - 1 && seg.charAt(0) === ".") return false;
+      if (!/^[a-zA-Z0-9._-]+$/.test(seg)) return false;
+    }
+    var fileNameLower = segments[segments.length - 1].toLowerCase();
+    if (FOLDER_IGNORED_FILES[fileNameLower]) return false;
+    if (fileNameLower.charAt(0) === "." && fileNameLower !== ".nojekyll") return false;
+    if (FOLDER_ALLOWED_EXACT[fileNameLower] && segments.length === 1) return true;
+    return FOLDER_ALLOWED_EXT_RE.test(fileNameLower);
+  }
+
+  function collectFolderFiles(fileList) {
+    var rawFiles = Array.prototype.slice.call(fileList || []);
+    if (!rawFiles.length) return null;
+
+    var splitItems = rawFiles.map(function (file) {
+      var rawPath = String(file.webkitRelativePath || file.name || "").replace(/^\/+/, "");
+      return { file: file, parts: rawPath.split("/").filter(Boolean) };
+    });
+
+    // Detect prefix depth containing index.html (handles both direct folder and nested unzip folder)
+    var relevantItems = splitItems.filter(function (item) {
+      return !item.parts.some(function (seg) {
+        var low = seg.toLowerCase();
+        return FOLDER_IGNORED_SEGMENTS[low] || FOLDER_IGNORED_FILES[low];
+      });
+    });
+    if (!relevantItems.length) relevantItems = splitItems;
+
+    var rootDepth = 1;
+    var indexCandidates = relevantItems.filter(function (item) {
+      return item.parts.length >= 2 && item.parts[item.parts.length - 1].toLowerCase() === "index.html";
+    }).sort(function (a, b) {
+      return a.parts.length - b.parts.length;
+    });
+
+    if (indexCandidates.length) {
+      var bestPrefix = indexCandidates[0].parts.slice(0, -1).join("/");
+      var prefixPartsLen = indexCandidates[0].parts.length - 1;
+      var matchesAll = relevantItems.every(function (item) {
+        return item.parts.slice(0, prefixPartsLen).join("/") === bestPrefix;
+      });
+      if (matchesAll) {
+        rootDepth = prefixPartsLen;
+      }
+    }
+
+    var folderLabel = relevantItems[0].parts.slice(0, rootDepth).join("/") || "selected folder";
+    var files = [];
+    var totalBytes = 0;
+    var hasIndexHtml = false;
+
+    for (var i = 0; i < splitItems.length; i++) {
+      var entry = splitItems[i];
+      if (entry.parts.length <= rootDepth) continue;
+      var relPath = entry.parts.slice(rootDepth).join("/");
+      if (!isSafeSiteRelativePath(relPath)) continue;
+
+      if (entry.file.size > 15 * 1024 * 1024) {
+        throw new Error("File exceeds 15 MB GitHub limit: " + relPath);
+      }
+      totalBytes += entry.file.size;
+      if (totalBytes > 40 * 1024 * 1024) {
+        throw new Error("Selected folder exceeds 40 MB total limit");
+      }
+      if (relPath === "index.html") {
+        hasIndexHtml = true;
+      }
+      files.push({ path: relPath, file: entry.file });
+    }
+
+    if (!hasIndexHtml) {
+      throw new Error("Selected folder must contain index.html at its root");
+    }
+    if (files.length > 150) {
+      throw new Error("Too many files (" + files.length + "). Select the unpacked site folder only.");
+    }
+
+    files.sort(function (a, b) {
+      return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
+    });
+
+    return { folderLabel: folderLabel, files: files };
+  }
+
+  function triggerFolderPush() {
+    var cfg = getGhSettings();
+    if (!validateGhConfig(cfg)) return;
+    if (state.busy) return;
+    var input = el("folder-upload-input");
+    if (!input) return;
+    input.value = "";
+    input.click();
+  }
+
+  async function handleFolderSelected(event) {
+    var fileList = event.target.files;
+    if (!fileList || !fileList.length) return;
+
+    var parsed;
+    try {
+      parsed = collectFolderFiles(fileList);
+    } catch (err) {
+      event.target.value = "";
+      showStatus(err.message || "Invalid site folder", "err", 5200);
+      return;
+    }
+    event.target.value = "";
+    if (!parsed || !parsed.files.length) return;
+
+    var cfg = getGhSettings();
+    if (!validateGhConfig(cfg)) return;
+
+    var ok = await askConfirm(
+      "Push Local Folder to GitHub",
+      "Check and commit updated files from \"" + parsed.folderLabel + "\" (" + parsed.files.length + " site files) to " +
+        cfg.owner + "/" + cfg.repo + " (" + cfg.branch + ")?"
+    );
+    if (!ok) return;
+
+    state.busy = true;
+    var btn = el("btn-push-folder");
+    if (btn) btn.disabled = true;
+    showStatus("Comparing " + parsed.files.length + " local files with GitHub...", "loading", 0);
+
+    try {
+      var refData = await ghApiRequest(cfg, "git/ref/heads/" + encodeURIComponent(cfg.branch));
+      var baseCommitSha = refData && refData.object && refData.object.sha;
+      if (!baseCommitSha) {
+        throw new Error("Could not read branch " + cfg.branch);
+      }
+
+      var baseCommit = await ghApiRequest(cfg, "git/commits/" + encodeURIComponent(baseCommitSha));
+      var baseTreeSha = baseCommit && baseCommit.tree && baseCommit.tree.sha;
+      if (!baseTreeSha) {
+        throw new Error("Could not read repository tree");
+      }
+
+      var existingShaMap = {};
+      try {
+        var remoteTree = await ghApiRequest(cfg, "git/trees/" + encodeURIComponent(baseTreeSha) + "?recursive=1");
+        if (remoteTree && Array.isArray(remoteTree.tree)) {
+          remoteTree.tree.forEach(function (node) {
+            if (node.type === "blob" && node.path && node.sha) {
+              existingShaMap[node.path] = node.sha;
+            }
+          });
+        }
+      } catch (e) { /* fall back to uploading all files if tree lookup fails */ }
+
+      var filesToUpload = [];
+      var pushedContentJsonText = null;
+
+      for (var i = 0; i < parsed.files.length; i++) {
+        var item = parsed.files[i];
+        var buf = await item.file.arrayBuffer();
+        var bytes = new Uint8Array(buf);
+        if (item.path === CONTENT_PATH) {
+          try {
+            pushedContentJsonText = new TextDecoder().decode(bytes);
+          } catch (e) { /* ignore */ }
+        }
+        var localSha = await computeGitBlobSha1(bytes);
+        if (localSha && existingShaMap[item.path] === localSha) {
+          continue;
+        }
+        filesToUpload.push({ path: item.path, bytes: bytes });
+      }
+
+      if (!filesToUpload.length) {
+        showStatus("GitHub is already up to date (all " + parsed.files.length + " files match)", "ok", 4200);
+        return;
+      }
+
+      showStatus("Uploading " + filesToUpload.length + " changed file(s)...", "loading", 0);
+
+      var treeEntries = [];
+      var batchSize = 4;
+      for (var start = 0; start < filesToUpload.length; start += batchSize) {
+        var slice = filesToUpload.slice(start, start + batchSize);
+        var uploadedBatch = await Promise.all(slice.map(async function (entry) {
+          var blobRes = await ghApiRequest(cfg, "git/blobs", {
+            method: "POST",
+            body: {
+              content: bytesToBase64(entry.bytes),
+              encoding: "base64"
+            }
+          });
+          return {
+            path: entry.path,
+            mode: "100644",
+            type: "blob",
+            sha: blobRes.sha
+          };
+        }));
+        treeEntries = treeEntries.concat(uploadedBatch);
+      }
+
+      showStatus("Creating commit on " + cfg.branch + "...", "loading", 0);
+      var newTree = await ghApiRequest(cfg, "git/trees", {
+        method: "POST",
+        body: {
+          base_tree: baseTreeSha,
+          tree: treeEntries
+        }
+      });
+
+      var newCommit = await ghApiRequest(cfg, "git/commits", {
+        method: "POST",
+        body: {
+          message: "Update site files via Control Panel (" + treeEntries.length + " files)",
+          tree: newTree.sha,
+          parents: [baseCommitSha]
+        }
+      });
+
+      await ghApiRequest(cfg, "git/refs/heads/" + encodeURIComponent(cfg.branch), {
+        method: "PATCH",
+        body: { sha: newCommit.sha }
+      });
+
+      if (pushedContentJsonText) {
+        try {
+          var updatedJson = normalizeLoadedContent(JSON.parse(pushedContentJsonText));
+          if (updatedJson && updatedJson.hero) {
+            state.data = updatedJson;
+            renderAllPanels();
+            markDirty(false);
+          }
+        } catch (e) { /* ignore invalid local content.json parse */ }
+      }
+
+      showStatus("Pushed " + treeEntries.length + " file(s)! GitHub Pages updates in ~30–60s", "ok", 5500);
+    } catch (err) {
+      showStatus(err.message || "Folder push failed", "err", 6000);
+    } finally {
+      state.busy = false;
+      if (btn) btn.disabled = false;
+    }
+  }
+
   /* Tab Switching & Language Mode */
   function switchTab(tabId) {
     document.querySelector(".tab-shell").dataset.active = tabId;
@@ -1092,23 +1566,33 @@
   }
 
   function setEditLanguageMode(mode) {
-    state.editLang = mode;
+    var nextMode = mode === "ru" ? "ru" : "en";
+    state.editLang = nextMode;
     document.querySelectorAll(".lang-filter-btn").forEach(function (btn) {
-      btn.classList.toggle("is-active", btn.dataset.editLang === mode);
+      btn.classList.toggle("is-active", btn.dataset.editLang === nextMode);
     });
     document.querySelectorAll(".bilingual-pair").forEach(function (pair) {
-      pair.dataset.mode = mode;
+      pair.dataset.mode = nextMode;
     });
   }
 
   /* Export / Import / Download Full ZIP / Preview */
+  var CRC32_TABLE = (function () {
+    var table = new Uint32Array(256);
+    for (var i = 0; i < 256; i++) {
+      var c = i;
+      for (var j = 0; j < 8; j++) {
+        c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+      }
+      table[i] = c >>> 0;
+    }
+    return table;
+  })();
+
   function crc32Bytes(bytes) {
     var crc = 0xffffffff;
     for (var i = 0; i < bytes.length; i++) {
-      crc ^= bytes[i];
-      for (var j = 0; j < 8; j++) {
-        crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
-      }
+      crc = CRC32_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
     }
     return (crc ^ 0xffffffff) >>> 0;
   }
@@ -1191,7 +1675,7 @@
     if (!obj) return;
     if (typeof obj === "string") {
       var trimmed = obj.trim();
-      if (trimmed.indexOf("assets/") === 0 && trimmed.indexOf("..") === -1) {
+      if (/^assets\/[a-zA-Z0-9._/-]+$/.test(trimmed) && trimmed.indexOf("..") === -1) {
         outSet.add(trimmed);
       }
       return;
@@ -1220,9 +1704,7 @@
         "css/admin.css",
         "js/nebula.js",
         "js/app.js",
-        "js/admin.js",
-        "assets/docs/Nebula-EN.pdf",
-        "assets/docs/Nebula-RU.pdf"
+        "js/admin.js"
       ];
       var pathSet = new Set(basePaths);
       if (state.data) collectAssetPathsFromData(state.data, pathSet);
@@ -1274,39 +1756,6 @@
     }
   }
 
-  function exportJsonBackup() {
-    if (!state.data) return;
-    var blob = new Blob([JSON.stringify(state.data, null, 2) + "\n"], { type: "application/json;charset=utf-8" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "nebula-content-backup.json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-    showStatus("Backup downloaded", "ok", 2200);
-  }
-
-  function handleImportFile(event) {
-    var file = event.target.files && event.target.files[0];
-    event.target.value = "";
-    if (!file) return;
-
-    file.text().then(function (text) {
-      var parsed = JSON.parse(text);
-      if (!parsed || typeof parsed !== "object" || !parsed.hero) {
-        throw new Error("Invalid Nebula content.json structure");
-      }
-      state.data = parsed;
-      renderAllPanels();
-      markDirty(true);
-      showStatus("Imported JSON into draft", "ok", 2800);
-    }).catch(function (err) {
-      showStatus(err.message || "Invalid JSON file", "err", 4200);
-    });
-  }
-
   function openPreview() {
     if (!state.data) return;
     try {
@@ -1318,11 +1767,20 @@
     var a = document.createElement("a");
     a.href = "index.html?preview=draft";
     a.target = "_blank";
-    a.rel = "noopener";
+    a.rel = "noopener noreferrer";
     document.body.appendChild(a);
     a.click();
     a.remove();
   }
+
+  var EYE_OPEN_SVG = [
+    ["path", { d: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" }],
+    ["circle", { cx: "12", cy: "12", r: "3" }]
+  ];
+  var EYE_CLOSED_SVG = [
+    ["path", { d: "M17.94 17.94A10.07 10.07 0 0 1 12 20c-6.5 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" }],
+    ["line", { x1: "2", y1: "2", x2: "22", y2: "22" }]
+  ];
 
   function toggleTokenVisibility() {
     var input = el("gh-token");
@@ -1333,42 +1791,82 @@
       input.type = "password";
       btn.setAttribute("aria-label", "Show token");
       btn.setAttribute("aria-pressed", "false");
-      icon.innerHTML = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle>';
+      setSvgChildren(icon, EYE_OPEN_SVG);
     } else {
       input.type = "text";
       btn.setAttribute("aria-label", "Hide token");
       btn.setAttribute("aria-pressed", "true");
-      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-6.5 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="2" y1="2" x2="22" y2="22"></line>';
+      setSvgChildren(icon, EYE_CLOSED_SVG);
     }
   }
 
   async function loadInitialContent() {
     var hasDirtyDraft = false;
+    var cachedDraft = null;
     try {
       hasDirtyDraft = localStorage.getItem(DIRTY_KEY) === "1" && !!localStorage.getItem(DRAFT_KEY);
+      var rawDraft = localStorage.getItem(DRAFT_KEY);
+      if (rawDraft) {
+        var parsedDraft = normalizeLoadedContent(JSON.parse(rawDraft));
+        if (parsedDraft && Number(parsedDraft.schemaVersion) >= 13 && parsedDraft.hero) {
+          cachedDraft = parsedDraft;
+        }
+      }
     } catch (e) { /* ignore */ }
 
-    if (hasDirtyDraft) {
-      try {
-        var draftData = JSON.parse(localStorage.getItem(DRAFT_KEY));
-        if (draftData && Number(draftData.schemaVersion) >= 13) {
-          state.data = draftData;
-          renderAllPanels();
-          markDirty(true);
-          showStatus("Restored unsaved local draft", "ok", 2600);
-          return;
-        }
-      } catch (e) { /* fall through */ }
+    if (hasDirtyDraft && cachedDraft) {
+      state.data = cachedDraft;
+      renderAllPanels();
+      markDirty(true);
+      showStatus("Restored unsaved local draft", "ok", 2600);
+      return;
     }
 
-    try {
-      var res = await fetch(CONTENT_PATH + "?v=" + Date.now(), { cache: "no-store" });
-      if (!res.ok) throw new Error("Could not load data/content.json");
-      state.data = await res.json();
-      renderAllPanels();
-      markDirty(false);
-    } catch (err) {
-      showStatus("Load failed — use Import or Sync from GitHub", "err", 5200);
+    if (window.location.protocol !== "file:") {
+      try {
+        var res = await fetch(CONTENT_PATH, { cache: "no-cache" });
+        if (!res.ok) throw new Error("Could not load data/content.json");
+        state.data = normalizeLoadedContent(await res.json());
+        renderAllPanels();
+        markDirty(false);
+        return;
+      } catch (e) { /* fall through to GitHub or local fallback */ }
+    }
+
+    var cfg = getGhSettings();
+    if (cfg.token) {
+      try {
+        showStatus("Syncing from GitHub...", "loading", 0);
+        var remote = await fetchRemoteFile(cfg, CONTENT_PATH);
+        if (remote && typeof remote.content === "string") {
+          var decoded = fromBase64Utf8(remote.content);
+          var parsedRemote = normalizeLoadedContent(JSON.parse(decoded));
+          if (parsedRemote && typeof parsedRemote === "object" && parsedRemote.hero) {
+            state.data = parsedRemote;
+            renderAllPanels();
+            markDirty(false);
+            showStatus("Synced from GitHub", "ok", 2600);
+            return;
+          }
+        }
+      } catch (ghErr) {
+        state.data = cachedDraft || deepClone(DEFAULT_CONTENT);
+        renderAllPanels();
+        markDirty(false);
+        showStatus((ghErr && ghErr.message) ? ghErr.message : "GitHub sync failed — loaded local template", "err", 5200);
+        return;
+      }
+    }
+
+    state.data = cachedDraft || deepClone(DEFAULT_CONTENT);
+    renderAllPanels();
+    markDirty(false);
+    if (cachedDraft) {
+      showStatus("Loaded cached local copy", "ok", 2600);
+    } else if (cfg.token) {
+      showStatus("Loaded default template (Publish to create data/content.json)", "ok", 4000);
+    } else {
+      showStatus("Loaded local template — add GitHub token in GitHub tab", "ok", 4000);
     }
   }
 
@@ -1387,9 +1885,14 @@
       });
     });
 
-    ["gh-owner", "gh-repo", "gh-branch", "gh-token"].forEach(function (id) {
-      el(id).addEventListener("input", saveGhSettings);
-    });
+    var ghForm = el("gh-form");
+    if (ghForm) {
+      ghForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+      });
+    }
+
+    el("gh-token").addEventListener("input", saveGhSettings);
 
     el("toggle-token").addEventListener("click", toggleTokenVisibility);
     el("btn-sync-gh").addEventListener("click", syncFromGithub);
@@ -1405,10 +1908,9 @@
 
     el("btn-publish").addEventListener("click", publishToGithub);
     el("btn-preview").addEventListener("click", openPreview);
-    el("btn-export").addEventListener("click", exportJsonBackup);
+    el("btn-push-folder").addEventListener("click", triggerFolderPush);
+    el("folder-upload-input").addEventListener("change", handleFolderSelected);
     el("btn-download-zip").addEventListener("click", downloadSiteZip);
-    el("btn-import").addEventListener("click", function () { el("import-file-input").click(); });
-    el("import-file-input").addEventListener("change", handleImportFile);
     el("asset-upload-input").addEventListener("change", handleAssetFileSelected);
 
     loadInitialContent();

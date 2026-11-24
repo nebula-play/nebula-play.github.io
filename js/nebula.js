@@ -199,6 +199,17 @@
   }
 
   /* Render at low internal resolution (max 400px wide) for ultra-fast GPU performance + natural silky blur */
+  function uploadStaticUniforms() {
+    gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+    gl.uniform1f(uniforms.intensity, state.intensity);
+    gl.uniform1f(uniforms.cursorInfluence, state.cursorInfluence);
+    gl.uniform3fv(uniforms.bgColor, state.bgColor);
+    gl.uniform3fv(uniforms.coreColor, state.coreColor);
+    gl.uniform3fv(uniforms.flareColor, state.flareColor);
+    gl.uniform3fv(uniforms.violetColor, state.violetColor);
+    gl.uniform3fv(uniforms.roseColor, state.roseColor);
+  }
+
   function resize() {
     var scale = 0.26;
     var width = Math.min(400, Math.max(160, Math.round(window.innerWidth * scale)));
@@ -207,13 +218,19 @@
       canvas.width = width;
       canvas.height = height;
       gl.viewport(0, 0, width, height);
+      gl.uniform2f(uniforms.resolution, width, height);
     }
   }
 
+  var resizeRaf = 0;
   window.addEventListener("resize", function () {
-    resize();
-    if (reducedMotion) drawFrame(elapsedTime);
-  });
+    if (resizeRaf) return;
+    resizeRaf = requestAnimationFrame(function () {
+      resizeRaf = 0;
+      resize();
+      if (reducedMotion) drawFrame(elapsedTime);
+    });
+  }, { passive: true });
 
   window.addEventListener("pointermove", function (e) {
     if (reducedMotion) return;
@@ -227,17 +244,9 @@
   var rafId = null;
 
   function drawFrame(timeSec) {
-    gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
     gl.uniform1f(uniforms.time, timeSec);
     gl.uniform2f(uniforms.mouse, currentMouse.x, currentMouse.y);
     gl.uniform1f(uniforms.phase, currentPhase);
-    gl.uniform1f(uniforms.intensity, state.intensity);
-    gl.uniform1f(uniforms.cursorInfluence, state.cursorInfluence);
-    gl.uniform3fv(uniforms.bgColor, state.bgColor);
-    gl.uniform3fv(uniforms.coreColor, state.coreColor);
-    gl.uniform3fv(uniforms.flareColor, state.flareColor);
-    gl.uniform3fv(uniforms.violetColor, state.violetColor);
-    gl.uniform3fv(uniforms.roseColor, state.roseColor);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
@@ -277,6 +286,26 @@
     }
   });
 
+  canvas.addEventListener("webglcontextlost", function (e) {
+    e.preventDefault();
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    canvas.style.display = "none";
+  });
+
+  canvas.addEventListener("webglcontextrestored", function () {
+    canvas.style.display = "block";
+    uploadStaticUniforms();
+    resize();
+    drawFrame(elapsedTime);
+    if (!reducedMotion && !rafId && !document.hidden) {
+      lastTick = performance.now();
+      rafId = requestAnimationFrame(render);
+    }
+  });
+
   window.NebulaBackground = {
     updateConfig: function (cfg) {
       if (!cfg || typeof cfg !== "object") return;
@@ -294,6 +323,7 @@
       state.flareColor = hexToRgbNorm(cfg.flareColor, state.flareColor);
       state.violetColor = hexToRgbNorm(cfg.violetColor, state.violetColor);
       state.roseColor = hexToRgbNorm(cfg.roseColor, state.roseColor);
+      uploadStaticUniforms();
       if (reducedMotion) {
         drawFrame(elapsedTime);
       }
@@ -307,6 +337,7 @@
     }
   };
 
+  uploadStaticUniforms();
   resize();
   drawFrame(0);
   if (!reducedMotion) {

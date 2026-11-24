@@ -39,6 +39,7 @@ body {
 
 /* Header */
 .admin-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -50,8 +51,9 @@ body {
 .admin-brand {
   display: flex;
   align-items: baseline;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 h1 {
@@ -118,20 +120,10 @@ h1 {
   color: #ffb8af;
 }
 
-/* Toolbar */
-.toolbar-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
 .lang-filter {
   display: inline-flex;
   background-color: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: 9px;
   padding: 3px;
   gap: 3px;
@@ -156,7 +148,7 @@ h1 {
 }
 
 .dirty-indicator {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: #f0a875;
 }
@@ -255,12 +247,6 @@ h1 {
   gap: 14px;
 }
 
-.field-grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
 .field-wrap {
   margin-bottom: 14px;
 }
@@ -337,6 +323,7 @@ label {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"],
 input[type="date"],
 input[type="number"],
@@ -368,7 +355,7 @@ textarea:focus {
 
 .bilingual-pair {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -376,11 +363,6 @@ textarea:focus {
 .bilingual-pair[data-mode="en"] .lang-col-ru,
 .bilingual-pair[data-mode="ru"] .lang-col-en {
   display: none;
-}
-
-.bilingual-pair[data-mode="en"],
-.bilingual-pair[data-mode="ru"] {
-  grid-template-columns: 1fr;
 }
 
 /* Input with upload button */
@@ -776,14 +758,40 @@ textarea:focus {
 }
 
 @media (max-width: 680px) {
+  .admin-brand {
+    padding-right: 98px;
+  }
+
+  .lang-filter {
+    position: absolute;
+    top: -4px;
+    right: 0;
+  }
+
+  .lang-filter-btn {
+    min-height: 36px;
+    padding: 6px 11px;
+  }
+
   .field-grid-2,
-  .field-grid-3,
-  .bilingual-pair,
   .creator-link-row {
     grid-template-columns: 1fr;
   }
 
   .tab-body {
     padding: 16px;
+  }
+
+  .btn-action,
+  .tab-btn,
+  .btn-upload-inline,
+  .btn-secondary-panel,
+  .btn-danger-panel {
+    min-height: 44px;
+  }
+
+  .btn-card-ctrl {
+    width: 38px;
+    height: 38px;
   }
 }

@@ -118,9 +118,9 @@
       {
         "id": "alex-terex",
         "visible": true,
-        "photo": "assets/images/aleksandr-terekhov.jpeg",
+        "photo": "",
         "name": {
-          "en": "Aleksandr Terekhov / Alex Terex",
+          "en": "Aleksandr Terekhov (Alex Terex)",
           "ru": "Александр Терехов (Alex Terex)"
         },
         "role": {
@@ -128,17 +128,13 @@
           "ru": "Драматург · Сценарист · Режиссёр"
         },
         "bio": {
-          "en": "An independent Russian-Polish filmmaker and writer. Coming from a family of actors, he found his passion for storytelling at an early age. Drawn to science fiction, he strives to tell compelling human stories.",
+          "en": "Warsaw-based Polish-Russian filmmaker and playwright (VGIK). Raised in a theatrical dynasty — son of Margarita Terekhova, muse of Andrey Tarkovsky (Mirror). His sci-fi short Monument (2026) was selected at 49th Mill Valley Film Festival (CAFILM).",
           "ru": "Независимый режиссёр и драматург польского происхождения в Варшаве (ВГИК). Вырос в театральной династии — сын актрисы Маргариты Тереховой (музы Андрея Тарковского в «Зеркале»). Автор сай-фай драмы «Monument» (2026, 49th Mill Valley Film Festival)."
         },
         "links": [
           {
             "label": "LinkedIn",
             "url": "https://www.linkedin.com/in/alexterex/"
-          },
-          {
-            "label": "Website",
-            "url": "https://archaeoterex.github.io/"
           }
         ]
       },
