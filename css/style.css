@@ -346,11 +346,10 @@ button {
 
 .hero-title {
   margin: 0;
-  width: max-content;
   max-width: 100%;
   white-space: nowrap;
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 7.6vw, 5.8rem);
+  font-size: clamp(3.46rem, 10.9vw, 8.35rem);
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0.14em;
@@ -387,13 +386,17 @@ button {
 .hero-subtitle {
   margin: 14px 0 0;
   max-width: 100%;
-  font-size: clamp(0.74rem, 3.05vw, 1.12rem);
-  font-weight: 500;
+  font-size: clamp(0.76rem, 2.9vw, 1.12rem);
+  font-weight: 300;
   line-height: 1.42;
-  color: rgba(255, 255, 255, 0.94);
+  color: rgba(255, 255, 255, 0.92);
   letter-spacing: 0.03em;
   padding-left: 0.03em;
   text-wrap: balance;
+}
+
+:lang(ru) .hero-title {
+  font-size: clamp(2.35rem, 8.6vw, 7.2rem);
 }
 
 .btn {
@@ -922,9 +925,13 @@ button {
   }
 
   .hero-title {
-    font-size: clamp(2rem, 9.4vw, 2.8rem);
+    font-size: clamp(2.88rem, 13.4vw, 4.03rem);
     letter-spacing: 0.09em;
     padding-left: 0.09em;
+  }
+
+  :lang(ru) .hero-title {
+    font-size: clamp(2.2rem, 9.8vw, 3.2rem);
   }
 }
 

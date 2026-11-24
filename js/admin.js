@@ -1441,29 +1441,29 @@
       }
 
       var existingShaMap = {};
+      var treeLookupOk = false;
       try {
         var remoteTree = await ghApiRequest(cfg, "git/trees/" + encodeURIComponent(baseTreeSha) + "?recursive=1");
         if (remoteTree && Array.isArray(remoteTree.tree)) {
+          treeLookupOk = true;
           remoteTree.tree.forEach(function (node) {
             if (node.type === "blob" && node.path && node.sha) {
               existingShaMap[node.path] = node.sha;
             }
           });
         }
-      } catch (e) { /* fall back to uploading all files if tree lookup fails */ }
+      } catch (e) { /* fall back to uploading non-content files if tree lookup fails */ }
 
       var filesToUpload = [];
-      var pushedContentJsonText = null;
+      var preserveRemoteContent = !treeLookupOk || !!existingShaMap[CONTENT_PATH];
 
       for (var i = 0; i < parsed.files.length; i++) {
         var item = parsed.files[i];
+        if (item.path === CONTENT_PATH && preserveRemoteContent) {
+          continue;
+        }
         var buf = await item.file.arrayBuffer();
         var bytes = new Uint8Array(buf);
-        if (item.path === CONTENT_PATH) {
-          try {
-            pushedContentJsonText = new TextDecoder().decode(bytes);
-          } catch (e) { /* ignore */ }
-        }
         var localSha = await computeGitBlobSha1(bytes);
         if (localSha && existingShaMap[item.path] === localSha) {
           continue;
@@ -1472,7 +1472,7 @@
       }
 
       if (!filesToUpload.length) {
-        showStatus("GitHub is already up to date (all " + parsed.files.length + " files match)", "ok", 4200);
+        showStatus("GitHub site files are already up to date", "ok", 4200);
         return;
       }
 
@@ -1523,18 +1523,7 @@
         body: { sha: newCommit.sha }
       });
 
-      if (pushedContentJsonText) {
-        try {
-          var updatedJson = normalizeLoadedContent(JSON.parse(pushedContentJsonText));
-          if (updatedJson && updatedJson.hero) {
-            state.data = updatedJson;
-            renderAllPanels();
-            markDirty(false);
-          }
-        } catch (e) { /* ignore invalid local content.json parse */ }
-      }
-
-      showStatus("Pushed " + treeEntries.length + " file(s)! GitHub Pages updates in ~30–60s", "ok", 5500);
+      showStatus("Pushed " + treeEntries.length + " site file(s)! Form text preserved", "ok", 5500);
     } catch (err) {
       showStatus(err.message || "Folder push failed", "err", 6000);
     } finally {

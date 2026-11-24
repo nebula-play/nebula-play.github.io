@@ -321,10 +321,6 @@
     var viewport = cachedViewport || document.querySelector(".stage-viewport");
     if (viewport) viewport.scrollTop = 0;
 
-    if (viewId === "overview") {
-      requestAnimationFrame(fitHeroLockup);
-    }
-
     if (window.NebulaBackground && typeof window.NebulaBackground.setViewPhase === "function") {
       window.NebulaBackground.setViewPhase(VIEW_ORDER.indexOf(viewId));
     }
@@ -374,57 +370,10 @@
     }
   }
 
-  function fitHeroLockup() {
-    var view = byId("view-overview");
-    var titleEl = byId("hero-title");
-    var subEl = byId("hero-subtitle");
-    var stageEl = view ? view.querySelector(".hero-stage") : null;
-    if (!view || view.hidden || !titleEl || !subEl || !stageEl) return;
-
-    var titleText = (titleEl.textContent || "").trim();
-    var subText = (subEl.textContent || "").trim();
-    if (!titleText || !subText) return;
-
-    var maxStageWidth = stageEl.clientWidth;
-    if (maxStageWidth <= 0) return;
-
-    var subWidth = 0;
-    try {
-      var range = document.createRange();
-      range.selectNodeContents(subEl);
-      var rect = range.getBoundingClientRect();
-      var subFontSize = parseFloat(getComputedStyle(subEl).fontSize) || 16;
-      subWidth = Math.max(0, rect.width - subFontSize * 0.03);
-    } catch (e) {
-      subWidth = subEl.getBoundingClientRect().width;
-    }
-
-    subWidth = Math.min(maxStageWidth, subWidth);
-    if (subWidth < 80) return;
-
-    var ls = window.innerWidth <= 440 ? 0.09 : 0.14;
-    var testSize = 64;
-    titleEl.style.fontSize = testSize + "px";
-    titleEl.style.letterSpacing = ls + "em";
-    titleEl.style.paddingLeft = "0px";
-
-    var measuredBox = titleEl.getBoundingClientRect().width;
-    var inkWidth = measuredBox - ls * testSize;
-    if (inkWidth <= 0) return;
-
-    var targetSize = testSize * (subWidth / inkWidth);
-    var maxSafeSize = testSize * (maxStageWidth / (inkWidth + 2 * ls * testSize));
-    var finalSize = Math.min(124, maxSafeSize, Math.max(20, targetSize));
-
-    titleEl.style.fontSize = finalSize.toFixed(2) + "px";
-    titleEl.style.paddingLeft = ls + "em";
-  }
-
   function renderHero(lang) {
     var hero = appData.hero || FALLBACK_CONTENT.hero;
     byId("hero-title").textContent = t(hero.title, lang);
     byId("hero-subtitle").textContent = t(hero.subtitle, lang);
-    fitHeroLockup();
   }
 
   function renderAbout(lang) {
@@ -747,19 +696,6 @@
     var yearEl = byId("footer-year");
     if (yearEl) {
       yearEl.textContent = String(new Date().getFullYear());
-    }
-
-    var lockupResizeRaf = 0;
-    window.addEventListener("resize", function () {
-      if (lockupResizeRaf) return;
-      lockupResizeRaf = requestAnimationFrame(function () {
-        lockupResizeRaf = 0;
-        fitHeroLockup();
-      });
-    }, { passive: true });
-
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(fitHeroLockup);
     }
   }
 
