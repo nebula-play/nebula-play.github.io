@@ -547,11 +547,11 @@
 
     panel.append(
       createHeading("The Play — Title & Tagline"),
-      createBudgetNote("Single-screen header: Title <= 2 words (16 ch), Subtitle <= 11 words (65 ch)."),
-      createBilingualField({ label: "Main Title", target: d.hero.title, limit: { words: 2, chars: 16 } }),
-      createBilingualField({ label: "Subtitle", target: d.hero.subtitle, limit: { words: 11, chars: 65 } }),
+      createBudgetNote("Single-screen header: Title <= 4 words (32 ch), Subtitle <= 22 words (140 ch)."),
+      createBilingualField({ label: "Main Title", target: d.hero.title, limit: { words: 4, chars: 32 } }),
+      createBilingualField({ label: "Subtitle", target: d.hero.subtitle, limit: { words: 22, chars: 140 } }),
       createHeading("Play Cards (3 Columns Below Title)"),
-      createBudgetNote("Optimal 3-column no-scroll budget: Kicker <= 3 words, Title <= 5 words (40 ch), Body <= 24 words (165 ch).")
+      createBudgetNote("Optimal 3-column layout: Kicker <= 6 words (40 ch), Title <= 10 words (70 ch), Body <= 55 words (380 ch).")
     );
 
     d.about.cards.forEach(function (card, index) {
@@ -573,9 +573,9 @@
 
       box.append(
         header,
-        createBilingualField({ label: "Kicker", target: card.kicker, limit: { words: 3, chars: 24 } }),
-        createBilingualField({ label: "Title", target: card.title, limit: { words: 5, chars: 40 } }),
-        createBilingualField({ label: "Body Text", type: "textarea", target: card.text, limit: { words: 24, chars: 165 } })
+        createBilingualField({ label: "Kicker", target: card.kicker, limit: { words: 6, chars: 40 } }),
+        createBilingualField({ label: "Title", target: card.title, limit: { words: 10, chars: 70 } }),
+        createBilingualField({ label: "Body Text", type: "textarea", target: card.text, limit: { words: 55, chars: 380 } })
       );
       panel.appendChild(box);
     });
@@ -618,7 +618,7 @@
 
     panel.append(
       createHeading("Creators & Partners"),
-      createBudgetNote("Optimal 2-column card budget: Role <= 6 words (48 ch), Biography <= 38 words (250 ch). Footer holds only social & website buttons.")
+      createBudgetNote("2-column card budget: Role <= 12 words (80 ch), Biography <= 90 words (650 ch). Footer holds only social & website buttons.")
     );
 
     d.creators.items.forEach(function (item, index) {
@@ -713,9 +713,9 @@
 
       box.append(
         header,
-        createBilingualField({ label: "Full Name", target: item.name, limit: { words: 6, chars: 44 } }),
-        createBilingualField({ label: "Role", target: item.role, limit: { words: 6, chars: 48 } }),
-        createBilingualField({ label: "Biography", type: "textarea", target: item.bio, limit: { words: 38, chars: 250 } }),
+        createBilingualField({ label: "Full Name", target: item.name, limit: { words: 8, chars: 64 } }),
+        createBilingualField({ label: "Role", target: item.role, limit: { words: 12, chars: 80 } }),
+        createBilingualField({ label: "Biography", type: "textarea", target: item.bio, limit: { words: 90, chars: 650 } }),
         createField({
           label: "Portrait Photo Path / URL",
           value: item.photo || "",
@@ -758,7 +758,7 @@
 
     panel.append(
       createHeading("News & Updates"),
-      createBudgetNote("Optimal square-card budget (fits 3–4/row with button): Date <= 3w (14 ch), Location <= 2w (16 ch), Title <= 5w (36 ch), Description <= 12w (80 ch).")
+      createBudgetNote("Square-card budget: Date <= 5w (28 ch), Location <= 5w (36 ch), Title <= 12w (80 ch), Description <= 55w (380 ch).")
     );
 
     d.showings.items.forEach(function (item, index) {
@@ -794,11 +794,11 @@
 
       box.append(
         header,
-        createBilingualField({ label: "Date", target: item.dateLabel, limit: { words: 3, chars: 14 } }),
-        createBilingualField({ label: "Location", target: item.city, limit: { words: 2, chars: 16 } }),
-        createBilingualField({ label: "Title", target: item.title, limit: { words: 5, chars: 36 } }),
-        createBilingualField({ label: "Description", type: "textarea", target: item.description, limit: { words: 12, chars: 80 } }),
-        createBilingualField({ label: "Button Label (Optional)", target: item.ticketLabel, limit: { words: 3, chars: 18 } }),
+        createBilingualField({ label: "Date", target: item.dateLabel, limit: { words: 5, chars: 28 } }),
+        createBilingualField({ label: "Location", target: item.city, limit: { words: 5, chars: 36 } }),
+        createBilingualField({ label: "Title", target: item.title, limit: { words: 12, chars: 80 } }),
+        createBilingualField({ label: "Description", type: "textarea", target: item.description, limit: { words: 55, chars: 380 } }),
+        createBilingualField({ label: "Button Label (Optional)", target: item.ticketLabel, limit: { words: 5, chars: 32 } }),
         createField({
           label: "Button Action ('mailto' or external URL, Optional)",
           value: item.ticketUrl || "",
@@ -1455,6 +1455,7 @@
       } catch (e) { /* fall back to uploading non-content files if tree lookup fails */ }
 
       var filesToUpload = [];
+      var htmlBytesByPath = {};
       var preserveRemoteContent = !treeLookupOk || !!existingShaMap[CONTENT_PATH];
 
       for (var i = 0; i < parsed.files.length; i++) {
@@ -1464,6 +1465,9 @@
         }
         var buf = await item.file.arrayBuffer();
         var bytes = new Uint8Array(buf);
+        if (item.path === "index.html" || item.path === "admin.html") {
+          htmlBytesByPath[item.path] = bytes;
+        }
         var localSha = await computeGitBlobSha1(bytes);
         if (localSha && existingShaMap[item.path] === localSha) {
           continue;
@@ -1475,6 +1479,22 @@
         showStatus("GitHub site files are already up to date", "ok", 4200);
         return;
       }
+
+      // Stamp fresh cache-buster on HTML asset links whenever any site file changes
+      var deployStamp = String(Date.now());
+      var encoder = new TextEncoder();
+      var decoder = new TextDecoder();
+      ["index.html", "admin.html"].forEach(function (htmlPath) {
+        if (!htmlBytesByPath[htmlPath]) return;
+        var stampedHtml = stampAssetVersionsInHtml(decoder.decode(htmlBytesByPath[htmlPath]), deployStamp);
+        var stampedBytes = encoder.encode(stampedHtml);
+        var existingIdx = filesToUpload.findIndex(function (e) { return e.path === htmlPath; });
+        if (existingIdx >= 0) {
+          filesToUpload[existingIdx].bytes = stampedBytes;
+        } else {
+          filesToUpload.push({ path: htmlPath, bytes: stampedBytes });
+        }
+      });
 
       showStatus("Uploading " + filesToUpload.length + " changed file(s)...", "loading", 0);
 
@@ -1671,8 +1691,21 @@
     }
   }
 
+  function stampAssetVersionsInHtml(html, stamp) {
+    return String(html || "").replace(
+      /(href|src)=["']((?:css|js)\/[a-zA-Z0-9._/-]+)(?:\?[^"']*)?["']/gi,
+      function (match, attr, assetPath) {
+        return attr + '="' + assetPath + '?v=' + stamp + '"';
+      }
+    );
+  }
+
   async function downloadSiteZip() {
     if (state.busy) return;
+    if (window.location.protocol === "file:") {
+      showStatus("Open Control Panel in web preview to download Site ZIP", "err", 4800);
+      return;
+    }
     state.busy = true;
     var btn = el("btn-download-zip");
     if (btn) btn.disabled = true;
@@ -1694,15 +1727,19 @@
       var encoder = new TextEncoder();
       var entries = [];
       var allPaths = Array.from(pathSet);
+      var zipStamp = String(Date.now());
+      var hasIndexHtml = false;
 
       for (var i = 0; i < allPaths.length; i++) {
         var filePath = allPaths[i];
         try {
-          var res = await fetch(filePath + "?raw=1&v=" + Date.now(), { cache: "no-store" });
+          var res = await fetch(filePath + "?raw=1&v=" + zipStamp, { cache: "no-store" });
           if (!res.ok) continue;
           if (filePath.endsWith(".html")) {
             var html = await res.text();
             html = html.replace(/<script\b[^>]*src=["']\/@vite\/client["'][^>]*><\/script>\s*/gi, "");
+            html = stampAssetVersionsInHtml(html, zipStamp);
+            if (filePath === "index.html") hasIndexHtml = true;
             entries.push({ path: filePath, data: encoder.encode(html) });
           } else {
             var buf = await res.arrayBuffer();
@@ -1716,8 +1753,8 @@
         entries.push({ path: CONTENT_PATH, data: encoder.encode(jsonStr) });
       }
 
-      if (!entries.length) {
-        throw new Error("Could not collect site files");
+      if (!entries.length || !hasIndexHtml) {
+        throw new Error("Could not collect site files (open from web preview)");
       }
 
       var zipBlob = buildZipBlob(entries);

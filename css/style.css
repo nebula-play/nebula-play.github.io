@@ -616,7 +616,8 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 20px;
+  gap: 16px;
+  min-width: 0;
 }
 
 .showing-when {
@@ -644,7 +645,7 @@ button {
 .showing-main {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   margin: 0;
 }
@@ -655,13 +656,15 @@ button {
   font-weight: 600;
   line-height: 1.3;
   color: var(--accent-amber);
+  overflow-wrap: break-word;
 }
 
 .showing-desc {
   margin: 0;
   font-size: 0.87rem;
-  line-height: 1.46;
+  line-height: 1.48;
   color: var(--text-secondary);
+  overflow-wrap: break-word;
 }
 
 .showing-action {
