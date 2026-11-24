@@ -1422,13 +1422,6 @@
     var cfg = getGhSettings();
     if (!validateGhConfig(cfg)) return;
 
-    var ok = await askConfirm(
-      "Push Local Folder to GitHub",
-      "Check and commit updated files from \"" + parsed.folderLabel + "\" (" + parsed.files.length + " site files) to " +
-        cfg.owner + "/" + cfg.repo + " (" + cfg.branch + ")?"
-    );
-    if (!ok) return;
-
     state.busy = true;
     var btn = el("btn-push-folder");
     if (btn) btn.disabled = true;
