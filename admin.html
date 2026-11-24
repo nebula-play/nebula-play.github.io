@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="dark">
+  <title>Control Panel — NEBULA / Туманность</title>
+  <link rel="stylesheet" href="css/admin.css">
+<script src="/_aistudio-iframe.js?v=29045eb3"></script></head>
+<body>
+  <div id="status" class="status-msg" role="status" aria-live="polite"></div>
+
+  <div class="container">
+    <header class="admin-header">
+      <div class="admin-brand">
+        <h1>Nebula Control Panel</h1>
+        <a href="index.html" class="back-link">← Open Site</a>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-action" id="btn-import" title="Import content.json from disk">Import</button>
+        <button type="button" class="btn-action" id="btn-export" title="Download backup of content.json">Export JSON</button>
+        <button type="button" class="btn-action" id="btn-download-zip" title="Download complete GitHub Pages static bundle (.zip)">Download ZIP</button>
+        <button type="button" class="btn-action" id="btn-preview" title="Preview local draft on the live site">Preview</button>
+        <button type="button" class="btn-action btn-action-primary" id="btn-publish" title="Commit data/content.json to GitHub">Publish</button>
+        <input type="file" id="import-file-input" accept=".json,application/json" hidden>
+      </div>
+    </header>
+
+    <div class="toolbar-row">
+      <div class="lang-filter" role="group" aria-label="Editor language fields">
+        <button type="button" class="lang-filter-btn is-active" data-edit-lang="both">EN + RU</button>
+        <button type="button" class="lang-filter-btn" data-edit-lang="en">EN only</button>
+        <button type="button" class="lang-filter-btn" data-edit-lang="ru">RU only</button>
+      </div>
+      <div class="dirty-indicator" id="dirty-indicator" hidden>Unsaved local draft</div>
+    </div>
+
+    <div class="tab-shell" data-active="hero">
+      <nav class="tabs" role="tablist" aria-label="Content sections">
+        <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-tab="hero" id="tab-hero">The Play</button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="creators" id="tab-creators">Creators</button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="showings" id="tab-showings">News &amp; Updates</button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="contacts" id="tab-contacts">Contact &amp; PDFs</button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="nebula" id="tab-nebula">Nebula &amp; SEO</button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" data-tab="github" id="tab-github">GitHub</button>
+      </nav>
+
+      <div class="tab-body">
+        <section class="tab-panel active" id="panel-hero" role="tabpanel" aria-labelledby="tab-hero"></section>
+        <section class="tab-panel" id="panel-creators" role="tabpanel" aria-labelledby="tab-creators" hidden></section>
+        <section class="tab-panel" id="panel-showings" role="tabpanel" aria-labelledby="tab-showings" hidden></section>
+        <section class="tab-panel" id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></section>
+        <section class="tab-panel" id="panel-nebula" role="tabpanel" aria-labelledby="tab-nebula" hidden></section>
+        <section class="tab-panel" id="panel-github" role="tabpanel" aria-labelledby="tab-github" hidden>
+          <div class="field-grid-2">
+            <div class="field-wrap">
+              <label for="gh-owner">GitHub Owner</label>
+              <input type="text" id="gh-owner" placeholder="archaeoterex" spellcheck="false" autocapitalize="off">
+            </div>
+            <div class="field-wrap">
+              <label for="gh-repo">Repository Name</label>
+              <input type="text" id="gh-repo" placeholder="nebula-play" spellcheck="false" autocapitalize="off">
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label for="gh-branch">Branch</label>
+            <input type="text" id="gh-branch" placeholder="main" spellcheck="false" autocapitalize="off">
+          </div>
+
+          <div class="field-wrap">
+            <label for="gh-token">Fine-Grained Personal Access Token</label>
+            <div class="pass-wrap">
+              <input type="password" id="gh-token" placeholder="github_pat_... or ghp_..." autocomplete="off" spellcheck="false">
+              <button type="button" class="toggle-pass" id="toggle-token" aria-label="Show token" aria-pressed="false">
+                <svg id="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="github-actions">
+            <button type="button" class="btn-secondary-panel" id="btn-sync-gh">Sync content.json from GitHub</button>
+            <button type="button" class="btn-danger-panel" id="btn-clear-token">Sign Out / Clear Token</button>
+          </div>
+
+          <p class="field-hint">
+            Credentials stay strictly in <strong>localStorage</strong> on this browser. Required Fine-Grained PAT permission:
+            <strong>Contents: Read and write</strong> scoped only to this repository.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="asset-upload-input" hidden>
+
+  <dialog id="confirm-dialog" class="confirm-dialog">
+    <div class="confirm-box">
+      <h2 id="confirm-title" class="confirm-title">Confirm Action</h2>
+      <p id="confirm-message" class="confirm-message"></p>
+      <div class="confirm-actions">
+        <button type="button" class="btn-secondary-panel" id="confirm-cancel">Cancel</button>
+        <button type="button" class="btn-action btn-action-primary" id="confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="js/admin.js" defer></script>
+</body>
+</html>
