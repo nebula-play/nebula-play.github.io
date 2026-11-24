@@ -296,12 +296,6 @@
     }, 250);
   }
 
-  function countWords(str) {
-    var trimmed = String(str || "").trim();
-    if (!trimmed) return 0;
-    return trimmed.split(/\s+/).length;
-  }
-
   function createBudgetNote(text) {
     var div = document.createElement("div");
     div.className = "panel-budget-note";
@@ -359,13 +353,11 @@
     function updateCounter() {
       if (!opts.limit || !counterEl) return;
       var val = String(input.value || "");
-      var w = countWords(val);
       var c = val.length;
-      var maxW = opts.limit.words;
       var maxC = opts.limit.chars;
-      counterEl.textContent = w + "/" + maxW + " w · " + c + "/" + maxC + " ch";
-      var over = w > maxW || c > maxC;
-      var warn = !over && (w >= Math.ceil(maxW * 0.85) || c >= Math.ceil(maxC * 0.85));
+      counterEl.textContent = c + " / " + maxC + " ch";
+      var over = c > maxC;
+      var warn = !over && c >= Math.ceil(maxC * 0.85);
       counterEl.classList.toggle("is-over", over);
       counterEl.classList.toggle("is-warn", warn);
       wrap.classList.toggle("is-over", over);
@@ -547,11 +539,11 @@
 
     panel.append(
       createHeading("The Play — Title & Tagline"),
-      createBudgetNote("Single-screen header: Title <= 4 words (32 ch), Subtitle <= 22 words (140 ch)."),
-      createBilingualField({ label: "Main Title", target: d.hero.title, limit: { words: 4, chars: 32 } }),
-      createBilingualField({ label: "Subtitle", target: d.hero.subtitle, limit: { words: 22, chars: 140 } }),
+      createBudgetNote("Single-screen header: Title <= 32 ch, Subtitle <= 140 ch."),
+      createBilingualField({ label: "Main Title", target: d.hero.title, limit: { chars: 32 } }),
+      createBilingualField({ label: "Subtitle", target: d.hero.subtitle, limit: { chars: 140 } }),
       createHeading("Play Cards (3 Columns Below Title)"),
-      createBudgetNote("Optimal 3-column layout: Kicker <= 6 words (40 ch), Title <= 10 words (70 ch), Body <= 55 words (380 ch).")
+      createBudgetNote("Optimal 3-column layout: Kicker <= 40 ch, Title <= 70 ch, Body <= 380 ch.")
     );
 
     d.about.cards.forEach(function (card, index) {
@@ -573,9 +565,9 @@
 
       box.append(
         header,
-        createBilingualField({ label: "Kicker", target: card.kicker, limit: { words: 6, chars: 40 } }),
-        createBilingualField({ label: "Title", target: card.title, limit: { words: 10, chars: 70 } }),
-        createBilingualField({ label: "Body Text", type: "textarea", target: card.text, limit: { words: 55, chars: 380 } })
+        createBilingualField({ label: "Kicker", target: card.kicker, limit: { chars: 40 } }),
+        createBilingualField({ label: "Title", target: card.title, limit: { chars: 70 } }),
+        createBilingualField({ label: "Body Text", type: "textarea", target: card.text, limit: { chars: 380 } })
       );
       panel.appendChild(box);
     });
@@ -618,7 +610,7 @@
 
     panel.append(
       createHeading("Creators & Partners"),
-      createBudgetNote("2-column card budget: Role <= 12 words (80 ch), Biography <= 90 words (650 ch). Footer holds only social & website buttons.")
+      createBudgetNote("2-column card budget: Role <= 80 ch, Biography <= 650 ch. Footer holds only social & website buttons.")
     );
 
     d.creators.items.forEach(function (item, index) {
@@ -713,9 +705,9 @@
 
       box.append(
         header,
-        createBilingualField({ label: "Full Name", target: item.name, limit: { words: 8, chars: 64 } }),
-        createBilingualField({ label: "Role", target: item.role, limit: { words: 12, chars: 80 } }),
-        createBilingualField({ label: "Biography", type: "textarea", target: item.bio, limit: { words: 90, chars: 650 } }),
+        createBilingualField({ label: "Full Name", target: item.name, limit: { chars: 64 } }),
+        createBilingualField({ label: "Role", target: item.role, limit: { chars: 80 } }),
+        createBilingualField({ label: "Biography", type: "textarea", target: item.bio, limit: { chars: 650 } }),
         createField({
           label: "Portrait Photo Path / URL",
           value: item.photo || "",
@@ -758,7 +750,7 @@
 
     panel.append(
       createHeading("News & Updates"),
-      createBudgetNote("Square-card budget: Date <= 5w (28 ch), Location <= 5w (36 ch), Title <= 12w (80 ch), Description <= 55w (380 ch).")
+      createBudgetNote("Square-card budget: Date <= 28 ch, Location <= 36 ch, Title <= 80 ch, Description <= 380 ch.")
     );
 
     d.showings.items.forEach(function (item, index) {
@@ -794,11 +786,11 @@
 
       box.append(
         header,
-        createBilingualField({ label: "Date", target: item.dateLabel, limit: { words: 5, chars: 28 } }),
-        createBilingualField({ label: "Location", target: item.city, limit: { words: 5, chars: 36 } }),
-        createBilingualField({ label: "Title", target: item.title, limit: { words: 12, chars: 80 } }),
-        createBilingualField({ label: "Description", type: "textarea", target: item.description, limit: { words: 55, chars: 380 } }),
-        createBilingualField({ label: "Button Label (Optional)", target: item.ticketLabel, limit: { words: 5, chars: 32 } }),
+        createBilingualField({ label: "Date", target: item.dateLabel, limit: { chars: 28 } }),
+        createBilingualField({ label: "Location", target: item.city, limit: { chars: 36 } }),
+        createBilingualField({ label: "Title", target: item.title, limit: { chars: 80 } }),
+        createBilingualField({ label: "Description", type: "textarea", target: item.description, limit: { chars: 380 } }),
+        createBilingualField({ label: "Button Label (Optional)", target: item.ticketLabel, limit: { chars: 32 } }),
         createField({
           label: "Button Action ('mailto' or external URL, Optional)",
           value: item.ticketUrl || "",
