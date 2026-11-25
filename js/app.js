@@ -540,7 +540,6 @@
       return s && s.visible !== false;
     });
     list.classList.toggle("is-single", items.length === 1);
-    list.classList.toggle("is-pair", items.length === 2);
 
     if (!items.length) {
       var empty = document.createElement("div");
