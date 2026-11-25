@@ -4,8 +4,8 @@
     "defaultLang": "en",
     "seo": {
       "en": {
-        "title": "NEBULA — A Metaphysical Sci-Fi Play by Alex Terex",
-        "description": "Inspired by Ray Bradbury. A metaphysical dramedy about two parents, a quantumograph malfunction, and a child of probability."
+        "title": "NEBULA — A Sci-Fi Play by Alex Terex",
+        "description": "A metaphysical dramedy about two parents, a quantumograph malfunction, and a child of probability."
       },
       "ru": {
         "title": "ТУМАННОСТЬ — Метафизическая сай-фай пьеса Александра Терехова",
@@ -156,26 +156,6 @@
   },
   "showings": {
     "items": [
-      {
-        "id": "news-1795603302798",
-        "visible": true,
-        "dateLabel": {
-          "en": "2027",
-          "ru": "2027"
-        },
-        "city": {
-          "en": "TEST",
-          "ru": ""
-        },
-        "title": {
-          "en": "TEST",
-          "ru": ""
-        },
-        "description": {
-          "en": "TEST",
-          "ru": ""
-        }
-      },
       {
         "id": "script-2026",
         "visible": true,
