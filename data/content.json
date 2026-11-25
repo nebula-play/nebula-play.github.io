@@ -71,7 +71,7 @@
     "cards": [
       {
         "kicker": {
-          "en": "01. Premise",
+          "en": "01. The Story",
           "ru": "01. История"
         },
         "title": {
@@ -85,7 +85,7 @@
       },
       {
         "kicker": {
-          "en": "02. Stage",
+          "en": "02. The Stage",
           "ru": "02. Сцена"
         },
         "title": {
@@ -99,8 +99,8 @@
       },
       {
         "kicker": {
-          "en": "03. DNA",
-          "ru": "03. Вдохновение"
+          "en": "03. Relevance",
+          "ru": "03. Контекст"
         },
         "title": {
           "en": "Bradbury, Science & Our Moment",
