@@ -211,8 +211,46 @@
     return "";
   }
 
+  var INLINE_LINK_RE = /\[([^\]\r\n]+)\]\(([^\s)]+(?:\([^\s)]*\)[^\s)]*)*)\)/g;
+
+  function stripInlineLinks(text) {
+    return String(text || "").replace(INLINE_LINK_RE, "$1");
+  }
+
+  function setRichText(node, rawText) {
+    var str = String(rawText || "");
+    node.replaceChildren();
+    INLINE_LINK_RE.lastIndex = 0;
+    var lastIdx = 0;
+    var match;
+    while ((match = INLINE_LINK_RE.exec(str)) !== null) {
+      if (match.index > lastIdx) {
+        node.appendChild(document.createTextNode(str.slice(lastIdx, match.index)));
+      }
+      var label = match[1];
+      var href = safeHref(match[2]);
+      if (href) {
+        var a = document.createElement("a");
+        a.className = "inline-card-link";
+        a.href = href;
+        a.textContent = label;
+        if (/^https?:/i.test(href)) {
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+        }
+        node.appendChild(a);
+      } else {
+        node.appendChild(document.createTextNode(match[0]));
+      }
+      lastIdx = INLINE_LINK_RE.lastIndex;
+    }
+    if (lastIdx < str.length) {
+      node.appendChild(document.createTextNode(str.slice(lastIdx)));
+    }
+  }
+
   function getInitials(name) {
-    var parts = String(name || "").replace(/\(.*?\)/g, "").trim().split(/\s+/).filter(Boolean);
+    var parts = stripInlineLinks(name).replace(/\(.*?\)/g, "").trim().split(/\s+/).filter(Boolean);
     if (!parts.length) return "N";
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -333,12 +371,16 @@
         document.title = seo.title;
         var ogTitle = document.querySelector('meta[property="og:title"]');
         if (ogTitle) ogTitle.setAttribute("content", seo.title);
+        var twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute("content", seo.title);
       }
       if (seo.description) {
         var desc = document.querySelector('meta[name="description"]');
         if (desc) desc.setAttribute("content", seo.description);
         var ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute("content", seo.description);
+        var twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute("content", seo.description);
       }
     }
     document.documentElement.lang = lang;
@@ -387,15 +429,15 @@
 
       var kicker = document.createElement("p");
       kicker.className = "card-kicker";
-      kicker.textContent = t(card.kicker, lang);
+      setRichText(kicker, t(card.kicker, lang));
 
       var h3 = document.createElement("h3");
       h3.className = "about-card-title";
-      h3.textContent = t(card.title, lang);
+      setRichText(h3, t(card.title, lang));
 
       var p = document.createElement("p");
       p.className = "about-card-text";
-      p.textContent = t(card.text, lang);
+      setRichText(p, t(card.text, lang));
 
       article.append(kicker, h3, p);
       frag.appendChild(article);
@@ -421,21 +463,22 @@
 
       var media = document.createElement("div");
       media.className = "creator-media";
-      var nameStr = t(item.name, lang);
+      var nameRaw = t(item.name, lang);
+      var namePlain = stripInlineLinks(nameRaw);
       var photoUrl = safeHref(item.photo);
 
       function renderMonogram() {
         media.replaceChildren();
         var mono = document.createElement("span");
         mono.className = "creator-monogram";
-        mono.textContent = getInitials(nameStr);
+        mono.textContent = getInitials(namePlain);
         media.appendChild(mono);
       }
 
       if (photoUrl) {
         var img = document.createElement("img");
         img.src = photoUrl;
-        img.alt = nameStr;
+        img.alt = namePlain;
         img.loading = "lazy";
         img.setAttribute("referrerpolicy", "no-referrer");
         img.addEventListener("error", renderMonogram, { once: true });
@@ -449,18 +492,18 @@
 
       var role = document.createElement("p");
       role.className = "creator-role";
-      role.textContent = t(item.role, lang);
+      setRichText(role, t(item.role, lang));
 
       var h3 = document.createElement("h3");
       h3.className = "creator-name";
-      h3.textContent = nameStr;
+      setRichText(h3, nameRaw);
 
       head.append(role, h3);
       top.append(media, head);
 
       var bio = document.createElement("p");
       bio.className = "creator-bio";
-      bio.textContent = t(item.bio, lang);
+      setRichText(bio, t(item.bio, lang));
 
       card.append(top, bio);
 
@@ -503,6 +546,8 @@
     var items = (Array.isArray(showings.items) ? showings.items : []).filter(function (s) {
       return s && s.visible !== false;
     });
+    list.classList.toggle("is-single", items.length === 1);
+    list.classList.toggle("is-pair", items.length === 2);
 
     if (!items.length) {
       var empty = document.createElement("div");
@@ -526,7 +571,7 @@
       if (dateText) {
         var date = document.createElement("span");
         date.className = "showing-date";
-        date.textContent = dateText;
+        setRichText(date, dateText);
         when.appendChild(date);
       }
 
@@ -534,7 +579,7 @@
       if (placeText) {
         var place = document.createElement("span");
         place.className = "showing-place";
-        place.textContent = placeText;
+        setRichText(place, placeText);
         when.appendChild(place);
       }
 
@@ -543,14 +588,14 @@
 
       var h3 = document.createElement("h3");
       h3.className = "showing-title";
-      h3.textContent = t(item.title, lang);
+      setRichText(h3, t(item.title, lang));
       main.appendChild(h3);
 
       var descText = t(item.description, lang);
       if (descText) {
         var desc = document.createElement("p");
         desc.className = "showing-desc";
-        desc.textContent = descText;
+        setRichText(desc, descText);
         main.appendChild(desc);
       }
 

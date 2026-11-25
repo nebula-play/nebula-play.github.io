@@ -1,7 +1,7 @@
 :root {
   --bg-space: #04050a;
-  --surface-glass: rgba(9, 12, 22, 0.54);
-  --border-hairline: rgba(220, 236, 255, 0.13);
+  --surface-glass: rgba(12, 16, 28, 0.28);
+  --border-hairline: rgba(220, 236, 255, 0.14);
   --border-strong: rgba(40, 224, 234, 0.36);
 
   --text-primary: #f3f6fb;
@@ -205,8 +205,7 @@ button {
   letter-spacing: 0.06em;
   padding: 0 9px 0 11px;
   border-radius: var(--radius-sm);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  box-shadow: none;
   cursor: pointer;
   white-space: nowrap;
   transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 160ms var(--ease-out);
@@ -241,11 +240,9 @@ button {
   min-width: 100%;
   padding: 4px;
   border-radius: var(--radius-sm);
-  background: rgba(12, 16, 28, 0.9);
+  background: rgba(12, 16, 28, 0.62);
   border: 1px solid var(--border-hairline);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -367,8 +364,28 @@ button {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 6px 28px rgba(4, 5, 10, 0.55));
-  animation: titleColorFlow 18s ease-in-out infinite;
+  filter: drop-shadow(0 6px 28px rgba(4, 5, 10, 0.55)) blur(0px);
+  animation: titleColorFlow 18s ease-in-out infinite, titleBlurPulse 39s ease-in-out infinite;
+  will-change: filter, opacity;
+}
+
+@keyframes titleBlurPulse {
+  0%, 34%, 40%, 76%, 84%, 100% {
+    filter: drop-shadow(0 6px 28px rgba(4, 5, 10, 0.55)) blur(0px);
+    opacity: 1;
+  }
+  37% {
+    filter: drop-shadow(0 6px 28px rgba(4, 5, 10, 0.55)) blur(3.2px);
+    opacity: 0.86;
+  }
+  79% {
+    filter: drop-shadow(0 6px 28px rgba(4, 5, 10, 0.55)) blur(2px);
+    opacity: 0.92;
+  }
+  81% {
+    filter: drop-shadow(0 6px 28px rgba(4, 5, 10, 0.55)) blur(4px);
+    opacity: 0.82;
+  }
 }
 
 @keyframes titleColorFlow {
@@ -414,6 +431,7 @@ button {
   text-decoration: none;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: none;
   cursor: pointer;
   transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 160ms var(--ease-out);
 }
@@ -426,8 +444,7 @@ button {
   background: var(--btn-bg);
   border: 1px solid var(--btn-border);
   color: var(--text-secondary);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  box-shadow: none;
 }
 
 .btn-secondary:hover {
@@ -441,8 +458,23 @@ button {
   background: var(--surface-glass);
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.inline-card-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(36, 228, 238, 0.58);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  box-shadow: none;
+  transition: color 160ms var(--ease-out), text-decoration-color 160ms var(--ease-out);
+}
+
+.inline-card-link:hover {
+  color: var(--accent-cyan);
+  text-decoration-color: var(--accent-cyan);
 }
 
 /* Play Cards (3 horizontal cards under hero title) */
@@ -568,7 +600,7 @@ button {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
   gap: 12px;
 }
 
@@ -602,12 +634,22 @@ button {
   display: block;
 }
 
-/* News & Updates (full-width square cards, 3-4 per row, top-aligned) */
+/* News & Updates (square cards, up to 3-4 per row, centered when 1 or 2) */
 .showings-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
   width: 100%;
+}
+
+.showings-list.is-single {
+  grid-template-columns: minmax(260px, 340px);
+  justify-content: center;
+}
+
+.showings-list.is-pair {
+  grid-template-columns: repeat(2, minmax(260px, 340px));
+  justify-content: center;
 }
 
 .showing-card {
@@ -671,6 +713,7 @@ button {
   margin-top: auto;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .empty-state {
@@ -809,28 +852,40 @@ button {
   }
 
   .lang-toggle {
-    height: 44px;
-    padding: 0 10px 0 11px;
-    font-size: 0.75rem;
+    height: 35px;
+    padding: 0 9px 0 10px;
+    font-size: 0.74rem;
   }
 
   .lang-option {
-    height: 44px;
-    min-width: 60px;
-    font-size: 0.78rem;
+    height: 34px;
+    min-width: 54px;
+    font-size: 0.75rem;
   }
 
   .nav-tab {
-    height: 44px;
+    height: 35px;
     padding: 0 8px;
-    font-size: 0.78rem;
+    font-size: 0.77rem;
   }
 
   .btn {
-    min-height: 44px;
+    min-height: 40px;
     height: auto;
-    padding: 11px 18px;
-    font-size: 0.84rem;
+    padding: 9px 16px;
+    font-size: 0.83rem;
+  }
+
+  .hero-title {
+    font-size: clamp(3.8rem, 14.5vw, 6.2rem);
+    letter-spacing: 0.08em;
+    padding-left: 0.08em;
+  }
+
+  :lang(ru) .hero-title {
+    font-size: clamp(2.6rem, 10.5vw, 5rem);
+    letter-spacing: 0.06em;
+    padding-left: 0.06em;
   }
 
   .stage-viewport {
@@ -845,7 +900,9 @@ button {
 
   .about-grid,
   .creators-list,
-  .showings-list {
+  .showings-list,
+  .showings-list.is-single,
+  .showings-list.is-pair {
     grid-template-columns: 1fr;
   }
 
@@ -890,7 +947,7 @@ button {
   .footer-email {
     display: inline-flex;
     align-items: center;
-    min-height: 38px;
+    min-height: 36px;
     padding: 4px 2px;
   }
 
@@ -916,25 +973,27 @@ button {
   }
 
   .nav-tab {
-    height: 44px;
+    height: 35px;
     font-size: 0.74rem;
     padding: 0 5px;
   }
 
   .lang-toggle {
-    height: 44px;
+    height: 35px;
     font-size: 0.72rem;
     padding: 0 8px 0 9px;
   }
 
   .hero-title {
-    font-size: clamp(2.88rem, 13.4vw, 4.03rem);
-    letter-spacing: 0.09em;
-    padding-left: 0.09em;
+    font-size: clamp(3.7rem, 17.5vw, 5.2rem);
+    letter-spacing: 0.055em;
+    padding-left: 0.055em;
   }
 
   :lang(ru) .hero-title {
-    font-size: clamp(2.2rem, 9.8vw, 3.2rem);
+    font-size: clamp(2.55rem, 11.4vw, 3.8rem);
+    letter-spacing: 0.04em;
+    padding-left: 0.04em;
   }
 }
 
