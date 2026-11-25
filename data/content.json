@@ -164,7 +164,7 @@
         "id": "script-2026",
         "visible": true,
         "dateLabel": {
-          "en": "2026",
+          "en": "November 2026",
           "ru": "2026"
         },
         "city": {
@@ -172,68 +172,18 @@
           "ru": "Варшава"
         },
         "title": {
-          "en": "Play & Producer Dossier Ready",
-          "ru": "Пьеса и досье готовы"
+          "en": "NEBULA Enters European Development Phase",
+          "ru": "«Туманность» переходит в этап европейской разработки"
         },
         "description": {
-          "en": "Completed script and bilingual pitch decks available for theatres. Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Tes",
-          "ru": "Текст пьесы и презентации на двух языках готовы для театров."
+          "en": "With the original play completed and our international directing tandem formed—bridging dramatic/audiovisual direction with physical theatre—NEBULA is entering active development. We are currently preparing a Dramaturgical & Digital Research Lab in Berlin (Spring 2027) and are open to dialogue with European residency spaces, co-producers, and cultural funds.",
+          "ru": "Оригинальная пьеса завершена, и наш международный режиссёрский тандем — соединяющий драматическую и аудиовизуальную режиссуру с физическим театром — переходит к активной разработке постановки. Сейчас мы готовим драматургическую и цифровую исследовательскую лабораторию в Берлине (весна 2027) и открыты к диалогу с европейскими резиденциями, копродюсерами и фондами."
         },
         "ticketLabel": {
           "en": "Inquire",
           "ru": "Связаться"
         },
         "ticketUrl": "mailto"
-      },
-      {
-        "id": "dock11-2027",
-        "visible": true,
-        "dateLabel": {
-          "en": "Spring 2027",
-          "ru": "Весна 2027"
-        },
-        "city": {
-          "en": "Berlin, DE",
-          "ru": "Берлин, DE"
-        },
-        "title": {
-          "en": "Digital Lab at DOCK 11",
-          "ru": "Лаборатория в DOCK 11"
-        },
-        "description": {
-          "en": "Four-week residency testing reactive light, audio, and a 25-min WIP.",
-          "ru": "Месячная лаборатория реактивного света, звука и 25-минутный эскиз."
-        },
-        "ticketLabel": {
-          "en": "Partner / Inquire",
-          "ru": "Сотрудничество"
-        },
-        "ticketUrl": "mailto"
-      },
-      {
-        "id": "premiere-2028",
-        "visible": true,
-        "dateLabel": {
-          "en": "2027 – 2028",
-          "ru": "2027 – 2028"
-        },
-        "city": {
-          "en": "Europe",
-          "ru": "Европа"
-        },
-        "title": {
-          "en": "International Stage Premiere",
-          "ru": "Международная премьера"
-        },
-        "description": {
-          "en": "Full-length touring premiere co-directed with a physical theatre partner.",
-          "ru": "Полнометражная постановка с партнёром по физическому театру."
-        },
-        "ticketLabel": {
-          "en": "",
-          "ru": ""
-        },
-        "ticketUrl": ""
       }
     ]
   },
