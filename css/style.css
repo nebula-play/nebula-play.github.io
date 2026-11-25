@@ -240,8 +240,8 @@ button {
   min-width: 100%;
   padding: 4px;
   border-radius: var(--radius-sm);
-  background: rgba(12, 16, 28, 0.62);
-  border: 1px solid var(--border-hairline);
+  background: var(--btn-muted-bg);
+  border: 1px solid var(--btn-muted-border);
   box-shadow: none;
   display: flex;
   flex-direction: column;
@@ -603,7 +603,8 @@ button {
 }
 
 .showings-list.is-single {
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 514px);
+  justify-content: center;
 }
 
 .showing-card {
@@ -846,7 +847,8 @@ button {
 
   .about-grid,
   .creators-list,
-  .showings-list {
+  .showings-list,
+  .showings-list.is-single {
     grid-template-columns: 1fr;
   }
 
