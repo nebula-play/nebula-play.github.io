@@ -287,20 +287,66 @@
     ]
   };
 
+  var stencilMaskSeq = 0;
+
   function createSocialIconSvg(url, label) {
     var platform = detectSocialPlatform(url, label);
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 24 24");
+    var maskId = "nebula-stencil-" + (++stencilMaskSeq);
+    var ns = "http://www.w3.org/2000/svg";
+
+    var svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 32 32");
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
 
+    var defs = document.createElementNS(ns, "defs");
+    var mask = document.createElementNS(ns, "mask");
+    mask.setAttribute("id", maskId);
+    mask.setAttribute("maskUnits", "userSpaceOnUse");
+    mask.setAttribute("x", "0");
+    mask.setAttribute("y", "0");
+    mask.setAttribute("width", "32");
+    mask.setAttribute("height", "32");
+
+    var maskBg = document.createElementNS(ns, "rect");
+    maskBg.setAttribute("x", "0");
+    maskBg.setAttribute("y", "0");
+    maskBg.setAttribute("width", "32");
+    maskBg.setAttribute("height", "32");
+    maskBg.setAttribute("fill", "white");
+    mask.appendChild(maskBg);
+
+    var iconGroup = document.createElementNS(ns, "g");
+    iconGroup.setAttribute("transform", "translate(5.5, 5.5) scale(0.875)");
+
     var shapes = SOCIAL_ICONS[platform] || SOCIAL_ICONS.website;
     shapes.forEach(function (spec) {
-      var node = document.createElementNS("http://www.w3.org/2000/svg", spec[0]);
+      var node = document.createElementNS(ns, spec[0]);
       var attrs = spec[1];
-      Object.keys(attrs).forEach(function (k) { node.setAttribute(k, attrs[k]); });
-      svg.appendChild(node);
+      Object.keys(attrs).forEach(function (k) {
+        var val = attrs[k];
+        if ((k === "fill" || k === "stroke") && val === "currentColor") {
+          val = "black";
+        }
+        node.setAttribute(k, val);
+      });
+      iconGroup.appendChild(node);
     });
+
+    mask.appendChild(iconGroup);
+    defs.appendChild(mask);
+    svg.appendChild(defs);
+
+    var body = document.createElementNS(ns, "rect");
+    body.setAttribute("x", "0");
+    body.setAttribute("y", "0");
+    body.setAttribute("width", "32");
+    body.setAttribute("height", "32");
+    body.setAttribute("rx", "8");
+    body.setAttribute("fill", "currentColor");
+    body.setAttribute("mask", "url(#" + maskId + ")");
+    svg.appendChild(body);
+
     return svg;
   }
 

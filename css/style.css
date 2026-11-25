@@ -599,12 +599,12 @@ button {
 .hero-subtitle {
   margin: 14px 0 0;
   max-width: 100%;
-  font-size: clamp(0.76rem, 2.9vw, 1.12rem);
+  font-size: clamp(0.94rem, 3.8vw, 1.12rem);
   font-weight: 300;
-  line-height: 1.42;
+  line-height: 1.44;
   color: rgba(255, 255, 255, 0.92);
-  letter-spacing: 0.03em;
-  padding-left: 0.03em;
+  letter-spacing: 0.025em;
+  padding-left: 0.025em;
   text-wrap: balance;
 }
 
@@ -758,41 +758,44 @@ button {
 
 .creator-foot {
   margin-top: auto;
-  padding-top: 2px;
+  padding-top: 4px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
 }
 
 .creator-social-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--text-secondary);
+  box-shadow: none;
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: rgba(220, 236, 255, 0.26);
   text-decoration: none;
   cursor: pointer;
-  transition: color 160ms var(--ease-out), transform 160ms var(--ease-out);
+  touch-action: manipulation;
+  transition: color 160ms var(--ease-out);
 }
 
 .creator-social-link:hover {
-  color: var(--accent-cyan);
-  transform: translateY(-1px);
-}
-
-.creator-social-link:active {
-  transform: translateY(0);
+  color: rgba(36, 228, 238, 0.72);
+  box-shadow: none;
+  filter: none;
 }
 
 .creator-social-link svg {
-  width: 18px;
-  height: 18px;
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
@@ -1076,17 +1079,17 @@ button {
   }
 
   .creator-foot {
-    gap: 6px;
+    gap: 8px;
   }
 
   .creator-social-link {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
 
   .creator-social-link svg {
-    width: 20px;
-    height: 20px;
+    width: 100%;
+    height: 100%;
   }
 
   .showing-card {
