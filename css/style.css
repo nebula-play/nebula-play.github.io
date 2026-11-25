@@ -426,14 +426,20 @@ button {
 }
 
 .inline-card-link {
-  color: var(--accent-cyan);
+  color: #4de9f2;
   text-decoration: none;
+  background: rgba(36, 228, 238, 0.12);
+  border-radius: 4px;
+  padding: 1px 4px;
   box-shadow: none;
-  transition: color 160ms var(--ease-out);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 
 .inline-card-link:hover {
   color: #a3f7fc;
+  background: rgba(36, 228, 238, 0.22);
 }
 
 /* Play Cards (3 horizontal cards under hero title) */
