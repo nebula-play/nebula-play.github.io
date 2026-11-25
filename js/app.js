@@ -37,7 +37,6 @@
         showings: { en: "News", ru: "Новости" }
       },
       labels: {
-        tickets: { en: "Inquire", ru: "Связаться" },
         copied: { en: "Email copied to clipboard", ru: "Почта скопирована" },
         emptyShowings: { en: "Updates coming soon.", ru: "Новости появятся скоро." },
         footerNote: { en: "Warsaw / Berlin", ru: "Варшава / Берлин" }
@@ -119,9 +118,7 @@
           description: {
             en: "Completed script and bilingual pitch decks available for theatres.",
             ru: "Текст пьесы и презентации на двух языках готовы для театров."
-          },
-          ticketLabel: { en: "Inquire", ru: "Связаться" },
-          ticketUrl: "mailto"
+          }
         },
         {
           id: "dock11-2027",
@@ -132,9 +129,7 @@
           description: {
             en: "Four-week residency testing reactive light, audio, and a 25-min WIP.",
             ru: "Месячная лаборатория реактивного света, звука и 25-минутный эскиз."
-          },
-          ticketLabel: { en: "Partner / Inquire", ru: "Сотрудничество" },
-          ticketUrl: "mailto"
+          }
         },
         {
           id: "premiere-2028",
@@ -145,9 +140,7 @@
           description: {
             en: "Full-length touring premiere co-directed with a physical theatre partner.",
             ru: "Полнометражная постановка с партнёром по физическому театру."
-          },
-          ticketLabel: { en: "", ru: "" },
-          ticketUrl: ""
+          }
         }
       ]
     },
@@ -557,9 +550,6 @@
       return;
     }
 
-    var rawEmail = String((appData.contacts && appData.contacts.email) || "").trim();
-    var validEmail = isValidEmail(rawEmail) ? rawEmail : "";
-
     items.forEach(function (item) {
       var card = document.createElement("article");
       card.className = "showing-card glass-surface";
@@ -599,35 +589,7 @@
         main.appendChild(desc);
       }
 
-      var action = document.createElement("div");
-      action.className = "showing-action";
-      var rawTicket = String(item.ticketUrl || "").trim();
-      if (rawTicket === "mailto" || rawTicket === "#contacts") {
-        if (validEmail) {
-          var mailBtn = document.createElement("a");
-          mailBtn.className = "btn btn-secondary";
-          mailBtn.href = "mailto:" + validEmail;
-          mailBtn.textContent = t(item.ticketLabel, lang) || t(labels.tickets, lang);
-          mailBtn.addEventListener("click", copyEmailToClipboard);
-          action.appendChild(mailBtn);
-        }
-      } else {
-        var ticketHref = safeHref(rawTicket);
-        if (ticketHref) {
-          var btnLink = document.createElement("a");
-          btnLink.className = "btn btn-secondary";
-          btnLink.href = ticketHref;
-          btnLink.target = "_blank";
-          btnLink.rel = "noopener noreferrer";
-          btnLink.textContent = t(item.ticketLabel, lang) || t(labels.tickets, lang);
-          action.appendChild(btnLink);
-        }
-      }
-
       card.append(when, main);
-      if (action.childNodes.length) {
-        card.appendChild(action);
-      }
       frag.appendChild(card);
     });
     list.replaceChildren(frag);

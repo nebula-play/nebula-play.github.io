@@ -416,43 +416,6 @@ button {
   font-size: clamp(2.35rem, 8.6vw, 7.2rem);
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-  box-shadow: none;
-  cursor: pointer;
-  transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 160ms var(--ease-out);
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn-secondary {
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  color: var(--text-secondary);
-  box-shadow: none;
-}
-
-.btn-secondary:hover {
-  background: var(--btn-bg-hover);
-  border-color: var(--btn-border-hover);
-  color: #ffffff;
-}
-
 /* Glass Surface */
 .glass-surface {
   background: var(--surface-glass);
@@ -703,13 +666,6 @@ button {
   line-height: 1.48;
   color: var(--text-secondary);
   overflow-wrap: break-word;
-}
-
-.showing-action {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
 }
 
 .empty-state {
