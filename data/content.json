@@ -5,7 +5,7 @@
     "seo": {
       "en": {
         "title": "NEBULA — A Metaphysical Sci-Fi Play by Alex Terex",
-        "description": "Inspired by Ray Bradbury. A metaphysical dramedy about two parents, a quantumograph malfunction, and a child born as a cloud of probability."
+        "description": "Inspired by Ray Bradbury. A metaphysical dramedy about two parents, a quantumograph malfunction, and a child of probability."
       },
       "ru": {
         "title": "ТУМАННОСТЬ — Метафизическая сай-фай пьеса Александра Терехова",
@@ -39,10 +39,6 @@
       }
     },
     "labels": {
-      "tickets": {
-        "en": "Inquire",
-        "ru": "Связаться"
-      },
       "copied": {
         "en": "Email copied to clipboard",
         "ru": "Почта скопирована"
@@ -128,7 +124,7 @@
           "ru": "Драматург · Сценарист · Режиссёр"
         },
         "bio": {
-          "en": "A Warsaw-based independent filmmaker, screenwriter, and playwright. Raised in an acclaimed theatre and cinema dynasty and trained in directing at VGIK, he brings a sharp audiovisual sensibility to deeply human speculative stories. His Warsaw-shot sci-fi short [Monument](https://youtu.be/hB2iRJALrGc) was selected for the 49th Mill Valley Film Festival, presented by the California Film Institute.",
+          "en": "A Warsaw-based independent filmmaker, screenwriter, and playwright. Raised in an acclaimed theatre and cinema dynasty and trained in directing at VGIK, he brings a sharp audiovisual sensibility to deeply human speculative stories. His polish sci-fi short [Monument](https://youtu.be/hB2iRJALrGc) was selected for the 49th Mill Valley Film Festival, presented by the California Film Institute.",
           "ru": "Независимый кинорежиссёр, сценарист и драматург, работающий в Варшаве. Выросший в признанной театрально-кинематографической династии и получивший режиссёрское образование во ВГИКе, он соединяет авторский визуальный язык с пронзительной гуманистической фантастикой. Его снятая в Варшаве короткометражная сай-фай драма «Monument» (2026) вошла в программу 49-го кинофестиваля в Милл-Вэлли (Калифорнийский институт кино)."
         },
         "links": [
@@ -178,12 +174,7 @@
         "description": {
           "en": "With the original play completed and our international directing tandem formed—bridging dramatic/audiovisual direction with physical theatre—NEBULA is entering active development. We are currently preparing a Dramaturgical & Digital Research Lab in Berlin (Spring 2027) and are open to dialogue with European residency spaces, co-producers, and cultural funds.",
           "ru": "Оригинальная пьеса завершена, и наш международный режиссёрский тандем — соединяющий драматическую и аудиовизуальную режиссуру с физическим театром — переходит к активной разработке постановки. Сейчас мы готовим драматургическую и цифровую исследовательскую лабораторию в Берлине (весна 2027) и открыты к диалогу с европейскими резиденциями, копродюсерами и фондами."
-        },
-        "ticketLabel": {
-          "en": "Inquire",
-          "ru": "Связаться"
-        },
-        "ticketUrl": "mailto"
+        }
       }
     ]
   },
