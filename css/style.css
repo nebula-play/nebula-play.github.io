@@ -1034,15 +1034,15 @@ button {
   }
 
   .hero-title {
-    font-size: clamp(3.8rem, 14.5vw, 6.2rem);
-    letter-spacing: 0.08em;
-    padding-left: 0.08em;
+    font-size: clamp(5rem, 19.3vw, 8.25rem);
+    letter-spacing: 0.04em;
+    padding-left: 0.04em;
   }
 
   :lang(ru) .hero-title {
-    font-size: clamp(2.6rem, 10.5vw, 5rem);
-    letter-spacing: 0.06em;
-    padding-left: 0.06em;
+    font-size: clamp(3.45rem, 13.8vw, 6.65rem);
+    letter-spacing: 0.02em;
+    padding-left: 0.02em;
   }
 
   .stage-viewport {
@@ -1140,15 +1140,15 @@ button {
   }
 
   .hero-title {
-    font-size: clamp(3.7rem, 17.5vw, 5.2rem);
-    letter-spacing: 0.055em;
-    padding-left: 0.055em;
+    font-size: clamp(4.7rem, 22.4vw, 6.9rem);
+    letter-spacing: 0.03em;
+    padding-left: 0.03em;
   }
 
   :lang(ru) .hero-title {
-    font-size: clamp(2.55rem, 11.4vw, 3.8rem);
-    letter-spacing: 0.04em;
-    padding-left: 0.04em;
+    font-size: clamp(3.15rem, 13.8vw, 5.05rem);
+    letter-spacing: 0.015em;
+    padding-left: 0.015em;
   }
 }
 
