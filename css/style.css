@@ -428,7 +428,7 @@ button {
 .inline-card-link {
   color: #4de9f2;
   text-decoration: none;
-  background: rgba(4, 6, 12, 0.58);
+  background: rgba(4, 6, 12, 0.25);
   border-radius: 4px;
   padding: 1px 5px;
   box-shadow: none;
@@ -439,7 +439,7 @@ button {
 
 .inline-card-link:hover {
   color: #a3f7fc;
-  background: rgba(4, 6, 12, 0.82);
+  background: rgba(4, 6, 12, 0.42);
 }
 
 /* Play Cards (3 horizontal cards under hero title) */
