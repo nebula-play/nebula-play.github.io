@@ -147,7 +147,7 @@
           "ru": "Физический театр и хореография"
         },
         "bio": {
-          "en": "Collaborative staging partner shaping the somatic score of the performance — bridging the absurd physical comedy of 'Dance of Love' and the ecstatic ensemble choreography of 'Dance of Everything'.",
+          "en": "\n",
           "ru": "Партнёр по сорежиссуре, отвечающий за телесную партитуру спектакля — от абсурдной пластики «Танца Любви» до финального «Танца Всего»."
         },
         "links": []
@@ -156,6 +156,26 @@
   },
   "showings": {
     "items": [
+      {
+        "id": "news-1795603302798",
+        "visible": true,
+        "dateLabel": {
+          "en": "2027",
+          "ru": "2027"
+        },
+        "city": {
+          "en": "TEST",
+          "ru": ""
+        },
+        "title": {
+          "en": "TEST",
+          "ru": ""
+        },
+        "description": {
+          "en": "TEST",
+          "ru": ""
+        }
+      },
       {
         "id": "script-2026",
         "visible": true,
