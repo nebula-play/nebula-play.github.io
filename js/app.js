@@ -315,9 +315,14 @@
     }, 2200);
   }
 
-  function copyEmailToClipboard() {
-    var email = (appData.contacts && appData.contacts.email) || "";
-    if (!email) return;
+  function copyEmailToClipboard(e) {
+    var email = isValidEmail((appData.contacts && appData.contacts.email) || "")
+      ? String(appData.contacts.email).trim()
+      : "";
+    if (!email) {
+      if (e) e.preventDefault();
+      return;
+    }
     var labels = (appData.ui && appData.ui.labels) || FALLBACK_CONTENT.ui.labels;
     var msg = t(labels.copied, currentLang) + " (" + email + ")";
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -613,10 +618,6 @@
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-checked", active ? "true" : "false");
     });
-
-    if (window.NebulaBackground && appData.settings && appData.settings.nebula) {
-      window.NebulaBackground.updateConfig(appData.settings.nebula);
-    }
   }
 
   function setupInteractions() {
@@ -737,15 +738,20 @@
       });
   }
 
+  var initialDataPromise = loadInitialData();
+
   document.addEventListener("DOMContentLoaded", function () {
     setupInteractions();
-    loadInitialData().then(function () {
+    initialDataPromise.then(function () {
       var savedLang = null;
       try {
         savedLang = localStorage.getItem(LANG_STORAGE_KEY);
       } catch (e) { /* ignore */ }
       var defaultLang = (appData.settings && appData.settings.defaultLang) || "en";
       var initialLang = savedLang === "ru" || savedLang === "en" ? savedLang : defaultLang;
+      if (window.NebulaBackground && appData.settings && appData.settings.nebula) {
+        window.NebulaBackground.updateConfig(appData.settings.nebula);
+      }
       renderAll(initialLang);
       switchView(currentView);
     });

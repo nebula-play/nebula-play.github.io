@@ -33,14 +33,19 @@
   var canvas = document.getElementById("nebula-canvas");
   if (!canvas) return;
 
-  var gl = canvas.getContext("webgl", {
-    alpha: false,
-    antialias: false,
-    depth: false,
-    stencil: false,
-    preserveDrawingBuffer: false,
-    powerPreference: "low-power"
-  });
+  var gl = null;
+  try {
+    gl = canvas.getContext("webgl", {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      preserveDrawingBuffer: false,
+      powerPreference: "low-power"
+    });
+  } catch (e) {
+    gl = null;
+  }
 
   if (!gl) {
     canvas.style.display = "none";
@@ -117,7 +122,7 @@
     "",
     "  float density = clamp((cyanField + orangeField + violetField + roseField) * 0.42 + cursorPull * 0.28, 0.0, 1.35);",
     "  vec3 col = mix(u_bgColor, blendedHue, clamp(density * 0.85, 0.0, 1.0));",
-    "  col += blendedHue * pow(density, 1.4) * 0.34;",
+    "  col += blendedHue * (density * sqrt(max(density, 0.0001))) * 0.34;",
     "  col += mix(u_coreColor, u_flareColor, 0.5 + 0.5 * sin(t * 0.5)) * cursorPull * 0.24;",
     "  col *= u_intensity;",
     "",
@@ -198,7 +203,7 @@
     });
   }
 
-  /* Render at low internal resolution (max 400px wide) for ultra-fast GPU performance + natural silky blur */
+  /* Render at low internal resolution (max 300px wide) for ultra-fast GPU performance + natural silky blur */
   function uploadStaticUniforms() {
     gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
     gl.uniform1f(uniforms.intensity, state.intensity);
@@ -211,9 +216,9 @@
   }
 
   function resize() {
-    var scale = 0.26;
-    var width = Math.min(400, Math.max(160, Math.round(window.innerWidth * scale)));
-    var height = Math.min(260, Math.max(100, Math.round(window.innerHeight * scale)));
+    var scale = 0.22;
+    var width = Math.min(300, Math.max(140, Math.round(window.innerWidth * scale)));
+    var height = Math.min(195, Math.max(90, Math.round(window.innerHeight * scale)));
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;
@@ -233,7 +238,7 @@
   }, { passive: true });
 
   window.addEventListener("pointermove", function (e) {
-    if (reducedMotion) return;
+    if (reducedMotion || state.cursorInfluence <= 0) return;
     targetMouse.x = e.clientX / Math.max(1, window.innerWidth);
     targetMouse.y = 1.0 - e.clientY / Math.max(1, window.innerHeight);
   }, { passive: true });
@@ -258,7 +263,7 @@
     }
 
     /* Gentle ~30fps cap keeps all devices silky smooth & cool */
-    if (now - lastRender < 30 && !reducedMotion) return;
+    if (now - lastRender < 32 && !reducedMotion) return;
     lastRender = now;
 
     var dt = Math.min(0.08, Math.max(0.001, (now - lastTick) / 1000));
