@@ -118,7 +118,7 @@
       {
         "id": "alex-terex",
         "visible": true,
-        "photo": "",
+        "photo": "assets/images/avatar.jpg",
         "name": {
           "en": "Aleksandr Terekhov (Alex Terex)",
           "ru": "Александр Терехов (Alex Terex)"
@@ -133,16 +133,8 @@
         },
         "links": [
           {
-            "label": "LinkedIn",
-            "url": "https://www.linkedin.com/in/alexterex/"
-          },
-          {
             "label": "Website",
             "url": "https://archaeoterex.github.io/"
-          },
-          {
-            "label": "Instagram",
-            "url": "https://www.instagram.com/archaeoterex/"
           }
         ]
       },
