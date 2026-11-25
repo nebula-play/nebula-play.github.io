@@ -5,7 +5,7 @@
   --border-strong: rgba(40, 224, 234, 0.36);
 
   --text-primary: #f3f6fb;
-  --text-secondary: #b6c1d4;
+  --text-secondary: #d4deec;
   --text-muted: #8693aa;
 
   --accent-cyan: #24e4ee;
@@ -463,18 +463,14 @@ button {
 }
 
 .inline-card-link {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-color: rgba(36, 228, 238, 0.58);
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
+  color: var(--accent-cyan);
+  text-decoration: none;
   box-shadow: none;
-  transition: color 160ms var(--ease-out), text-decoration-color 160ms var(--ease-out);
+  transition: color 160ms var(--ease-out);
 }
 
 .inline-card-link:hover {
-  color: var(--accent-cyan);
-  text-decoration-color: var(--accent-cyan);
+  color: #a3f7fc;
 }
 
 /* Play Cards (3 horizontal cards under hero title) */
