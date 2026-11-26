@@ -690,8 +690,9 @@
         }
 
         if (photoSrc) {
+          var photoHref = safeHref(item.photoLink);
           var photoWrap = document.createElement("div");
-          photoWrap.className = "showing-media showing-media--photo";
+          photoWrap.className = "showing-media showing-media--photo" + (photoHref ? " is-linked" : "");
           var imgEl = document.createElement("img");
           imgEl.src = photoSrc;
           imgEl.alt = stripInlineLinks(t(item.title, lang)) || "News photo";
@@ -701,7 +702,21 @@
             photoWrap.remove();
             pruneEmptyStack();
           }, { once: true });
-          photoWrap.appendChild(imgEl);
+
+          if (photoHref) {
+            var photoAnchor = document.createElement("a");
+            photoAnchor.className = "showing-photo-link";
+            photoAnchor.href = photoHref;
+            photoAnchor.setAttribute("aria-label", imgEl.alt);
+            if (/^https?:/i.test(photoHref)) {
+              photoAnchor.target = "_blank";
+              photoAnchor.rel = "noopener noreferrer";
+            }
+            photoAnchor.appendChild(imgEl);
+            photoWrap.appendChild(photoAnchor);
+          } else {
+            photoWrap.appendChild(imgEl);
+          }
           mediaStack.appendChild(photoWrap);
         }
 
