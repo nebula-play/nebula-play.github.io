@@ -984,6 +984,42 @@ button {
   transform: translateY(0);
 }
 
+.nebula-tooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 320;
+  pointer-events: none;
+  max-width: min(260px, calc(100vw - 24px));
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(36, 228, 238, 0.34);
+  background: rgba(10, 15, 28, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+  color: #e6f3fb;
+  font-family: var(--font-mono);
+  font-size: 0.71rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+  transition: opacity 130ms var(--ease-out), transform 130ms var(--ease-out);
+}
+
+.nebula-tooltip.is-below {
+  transform: translate3d(0, -4px, 0);
+}
+
+.nebula-tooltip.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
 /* Responsive */
 @media (max-width: 820px) {
   .site-header {

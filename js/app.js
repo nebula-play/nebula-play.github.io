@@ -570,7 +570,7 @@
           link.target = "_blank";
           link.rel = "noopener noreferrer";
           link.setAttribute("aria-label", labelText);
-          link.title = labelText;
+          link.setAttribute("data-tooltip", labelText);
           link.appendChild(createSocialIconSvg(href, labelText));
           foot.appendChild(link);
         });
@@ -786,8 +786,105 @@
 
   var initialDataPromise = loadInitialData();
 
+  function initCustomTooltips() {
+    if (window._nebulaSiteTooltipsInit) return;
+    window._nebulaSiteTooltipsInit = true;
+
+    var tip = document.createElement("div");
+    tip.className = "nebula-tooltip";
+    tip.setAttribute("role", "tooltip");
+    tip.setAttribute("aria-hidden", "true");
+    document.body.appendChild(tip);
+
+    var activeTarget = null;
+    var showTimer = null;
+
+    function hideTooltip() {
+      clearTimeout(showTimer);
+      showTimer = null;
+      activeTarget = null;
+      tip.classList.remove("is-visible", "is-below");
+      tip.setAttribute("aria-hidden", "true");
+    }
+
+    function positionAndShow(target) {
+      if (!target || !document.body.contains(target)) return;
+      var text = target.getAttribute("data-tooltip");
+      if (!text) return;
+
+      tip.textContent = text;
+      tip.classList.remove("is-below");
+      var rect = target.getBoundingClientRect();
+      var tipW = tip.offsetWidth;
+      var tipH = tip.offsetHeight;
+
+      var top = rect.top - tipH - 8;
+      var below = false;
+      if (top < 8) {
+        top = rect.bottom + 8;
+        below = true;
+      }
+      var left = rect.left + (rect.width - tipW) / 2;
+      var maxLeft = Math.max(10, window.innerWidth - tipW - 10);
+      left = Math.max(10, Math.min(maxLeft, left));
+
+      tip.style.left = Math.round(left) + "px";
+      tip.style.top = Math.round(top) + "px";
+      tip.classList.toggle("is-below", below);
+      tip.setAttribute("aria-hidden", "false");
+      tip.classList.add("is-visible");
+    }
+
+    function scheduleShow(target, delayMs) {
+      clearTimeout(showTimer);
+      activeTarget = target;
+      if (!delayMs) {
+        positionAndShow(target);
+      } else {
+        showTimer = setTimeout(function () {
+          if (activeTarget === target) {
+            positionAndShow(target);
+          }
+        }, delayMs);
+      }
+    }
+
+    document.addEventListener("pointerover", function (e) {
+      if (e.pointerType === "touch") return;
+      var target = e.target && e.target.closest ? e.target.closest("[data-tooltip]") : null;
+      if (!target || target === activeTarget) return;
+      scheduleShow(target, 110);
+    });
+
+    document.addEventListener("pointerout", function (e) {
+      if (!activeTarget) return;
+      var next = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest("[data-tooltip]") : null;
+      if (next !== activeTarget) {
+        hideTooltip();
+      }
+    });
+
+    document.addEventListener("focusin", function (e) {
+      var target = e.target && e.target.closest ? e.target.closest("[data-tooltip]") : null;
+      if (!target) return;
+      try {
+        if (target.matches(":focus-visible")) {
+          scheduleShow(target, 0);
+        }
+      } catch (err) { /* ignore */ }
+    });
+
+    document.addEventListener("focusout", hideTooltip);
+    document.addEventListener("pointerdown", hideTooltip);
+    document.addEventListener("scroll", hideTooltip, true);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") hideTooltip();
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     setupInteractions();
+    initCustomTooltips();
     initialDataPromise.then(function () {
       var savedLang = null;
       try {
