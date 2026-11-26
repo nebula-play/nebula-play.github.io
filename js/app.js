@@ -204,6 +204,56 @@
     return "";
   }
 
+  function safeMediaSrc(url) {
+    var href = safeHref(url);
+    if (!href || href.charAt(0) === "#" || href.indexOf("mailto:") === 0) return "";
+    return href;
+  }
+
+  function parseVideoSource(rawUrl) {
+    var src = safeMediaSrc(rawUrl);
+    if (!src) return null;
+
+    if (/^https?:/i.test(src)) {
+      try {
+        var u = new URL(src);
+        var host = u.hostname.replace(/^www\./i, "").toLowerCase();
+        var ytId = "";
+        if (host === "youtu.be") {
+          ytId = u.pathname.replace(/^\/+/, "").split("/")[0];
+        } else if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
+          if (u.pathname === "/watch") {
+            ytId = u.searchParams.get("v") || "";
+          } else {
+            var ytMatch = u.pathname.match(/^\/(?:embed|shorts|live)\/([^/?#]+)/);
+            if (ytMatch) ytId = ytMatch[1];
+          }
+        }
+        if (ytId && /^[a-zA-Z0-9_-]{6,20}$/.test(ytId)) {
+          return {
+            type: "iframe",
+            src: "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(ytId) + "?rel=0&modestbranding=1"
+          };
+        }
+
+        if (host === "vimeo.com" || host === "player.vimeo.com") {
+          var vMatch = u.pathname.match(/\/(?:video\/)?(\d{4,16})(?:$|\/|\?)/);
+          if (vMatch) {
+            return {
+              type: "iframe",
+              src: "https://player.vimeo.com/video/" + encodeURIComponent(vMatch[1]) + "?dnt=1&title=0&byline=0&portrait=0"
+            };
+          }
+        }
+      } catch (e) { /* fall through to direct video check */ }
+    }
+
+    if (/\.(mp4|webm|ogg|mov|m4v)(?:[?#].*)?$/i.test(src) || src.indexOf("assets/") === 0) {
+      return { type: "video", src: src };
+    }
+    return null;
+  }
+
   var INLINE_LINK_RE = /\[([^\]\r\n]+)\]\(([^\s)]+(?:\([^\s)]*\)[^\s)]*)*)\)/g;
 
   function stripInlineLinks(text) {
@@ -599,6 +649,65 @@
       }
 
       card.append(when, main);
+
+      var videoSpec = parseVideoSource(item.video);
+      var photoSrc = safeMediaSrc(item.photo);
+      if (videoSpec || photoSrc) {
+        var mediaStack = document.createElement("div");
+        mediaStack.className = "showing-media-stack";
+
+        function pruneEmptyStack() {
+          if (!mediaStack.children.length && mediaStack.parentNode) {
+            mediaStack.remove();
+          }
+        }
+
+        if (videoSpec) {
+          var videoWrap = document.createElement("div");
+          videoWrap.className = "showing-media showing-media--video";
+          if (videoSpec.type === "iframe") {
+            var iframe = document.createElement("iframe");
+            iframe.src = videoSpec.src;
+            iframe.title = stripInlineLinks(t(item.title, lang)) || "Video";
+            iframe.loading = "lazy";
+            iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+            iframe.allowFullscreen = true;
+            iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+            videoWrap.appendChild(iframe);
+          } else {
+            var videoEl = document.createElement("video");
+            videoEl.src = videoSpec.src;
+            videoEl.controls = true;
+            videoEl.playsInline = true;
+            videoEl.preload = "metadata";
+            videoEl.addEventListener("error", function () {
+              videoWrap.remove();
+              pruneEmptyStack();
+            }, { once: true });
+            videoWrap.appendChild(videoEl);
+          }
+          mediaStack.appendChild(videoWrap);
+        }
+
+        if (photoSrc) {
+          var photoWrap = document.createElement("div");
+          photoWrap.className = "showing-media showing-media--photo";
+          var imgEl = document.createElement("img");
+          imgEl.src = photoSrc;
+          imgEl.alt = stripInlineLinks(t(item.title, lang)) || "News photo";
+          imgEl.loading = "lazy";
+          imgEl.setAttribute("referrerpolicy", "no-referrer");
+          imgEl.addEventListener("error", function () {
+            photoWrap.remove();
+            pruneEmptyStack();
+          }, { once: true });
+          photoWrap.appendChild(imgEl);
+          mediaStack.appendChild(photoWrap);
+        }
+
+        card.appendChild(mediaStack);
+      }
+
       frag.appendChild(card);
     });
     list.replaceChildren(frag);
