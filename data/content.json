@@ -112,29 +112,6 @@
   "creators": {
     "items": [
       {
-        "id": "co-director",
-        "visible": true,
-        "photo": "assets/images/lex.jpg",
-        "name": {
-          "en": "Lex Shcherbakov ",
-          "ru": "Сорежиссёр (TBC)"
-        },
-        "role": {
-          "en": "Director  ·  Choreographer",
-          "ru": "Физический театр и хореография"
-        },
-        "bio": {
-          "en": "An Israel-based director and choreographer working across physical, dramatic, documentary, and inclusive theatre. Approaching the body as an instrument of thought and vulnerability, he has created stage works across Germany, Poland, the Czech Republic, and Israel. A participant in the Sasha Waltz Guest programme and artist-in-residence at FLAUSEN and Kelim Choreographic Center, he collaborates with Vertigo Dance Company (Power of Balance) and has taught physical theatre in Prague. In 2026, he led a workshop at the Brain, Body, Cognition conference in Cambridge, exploring the dialogue between movement and mind.",
-          "ru": "Партнёр по сорежиссуре, отвечающий за телесную партитуру спектакля — от абсурдной пластики «Танца Любви» до финального «Танца Всего»."
-        },
-        "links": [
-          {
-            "label": "Instagram",
-            "url": "https://www.instagram.com/lex_shcherbakov/"
-          }
-        ]
-      },
-      {
         "id": "alex-terex",
         "visible": true,
         "photo": "assets/images/avatar.jpg",
@@ -154,6 +131,29 @@
           {
             "label": "Website",
             "url": "https://archaeoterex.github.io/"
+          }
+        ]
+      },
+      {
+        "id": "co-director",
+        "visible": true,
+        "photo": "assets/images/lex.jpg",
+        "name": {
+          "en": "Lex Shcherbakov ",
+          "ru": "Сорежиссёр (TBC)"
+        },
+        "role": {
+          "en": "Director  ·  Choreographer",
+          "ru": "Физический театр и хореография"
+        },
+        "bio": {
+          "en": "An Israel-based director and choreographer working across physical, dramatic, documentary, and inclusive theatre. Approaching the body as an instrument of thought and vulnerability, he has created stage works across Germany, Poland, the Czech Republic, and Israel. A participant in the Sasha Waltz Guest programme and artist-in-residence at FLAUSEN and Kelim Choreographic Center, he collaborates with Vertigo Dance Company (Power of Balance) and has taught physical theatre in Prague. In 2026, he led a workshop at the Brain, Body, Cognition conference in Cambridge, exploring the dialogue between movement and mind.",
+          "ru": "Партнёр по сорежиссуре, отвечающий за телесную партитуру спектакля — от абсурдной пластики «Танца Любви» до финального «Танца Всего»."
+        },
+        "links": [
+          {
+            "label": "Instagram",
+            "url": "https://www.instagram.com/lex_shcherbakov/"
           }
         ]
       }
