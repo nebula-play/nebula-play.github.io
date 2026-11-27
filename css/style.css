@@ -563,6 +563,8 @@ button {
   color: transparent;
   filter: drop-shadow(0 6px 24px rgba(4, 5, 10, 0.5)) blur(0px);
   animation: titleColorFlow 18s ease-in-out infinite, titleBlurPulse 39s ease-in-out infinite;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @keyframes titleBlurPulse {
@@ -976,6 +978,17 @@ button {
   gap: 8px;
 }
 
+.footer-right {
+  margin-left: auto;
+}
+
+.footer-left[hidden],
+.footer-email[hidden],
+.footer-sep[hidden],
+.footer-note[hidden] {
+  display: none;
+}
+
 .footer-email {
   color: var(--accent-cyan);
   text-decoration: none;
@@ -1209,11 +1222,19 @@ button {
     gap: 6px 14px;
   }
 
+  .footer-right {
+    margin-left: 0;
+  }
+
   .footer-email {
     display: inline-flex;
     align-items: center;
     min-height: 36px;
     padding: 4px 2px;
+  }
+
+  .footer-email[hidden] {
+    display: none;
   }
 
   .site-footer {

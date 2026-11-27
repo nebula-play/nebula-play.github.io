@@ -454,14 +454,29 @@
 
     var labels = ui.labels || {};
     var footerNote = byId("footer-note");
-    if (footerNote && labels.footerNote) footerNote.textContent = t(labels.footerNote, lang);
+    var noteText = labels.footerNote ? String(t(labels.footerNote, lang) || "").trim() : "";
+    if (footerNote) {
+      footerNote.textContent = noteText;
+      footerNote.hidden = !noteText;
+    }
 
     var rawEmail = String((appData.contacts && appData.contacts.email) || "").trim();
     var validEmail = isValidEmail(rawEmail) ? rawEmail : "";
     var footerEmail = byId("footer-email-link");
     if (footerEmail) {
-      footerEmail.textContent = validEmail || "—";
+      footerEmail.textContent = validEmail;
       footerEmail.href = validEmail ? "mailto:" + validEmail : "#";
+      footerEmail.hidden = !validEmail;
+    }
+
+    var footerSep = document.querySelector(".footer-sep");
+    if (footerSep) {
+      footerSep.hidden = !(validEmail && noteText);
+    }
+
+    var footerLeft = document.querySelector(".footer-left");
+    if (footerLeft) {
+      footerLeft.hidden = !validEmail && !noteText;
     }
   }
 
