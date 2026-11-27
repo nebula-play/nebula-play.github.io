@@ -803,6 +803,7 @@ button {
   width: 17px;
   height: 17px;
   display: block;
+  flex-shrink: 0;
 }
 
 /* News & Updates (2 wide cards per row matching Creators) */
@@ -1194,8 +1195,8 @@ button {
   }
 
   .creator-social-link svg {
-    width: 100%;
-    height: 100%;
+    width: 19px;
+    height: 19px;
   }
 
   .showing-card {
