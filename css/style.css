@@ -306,6 +306,15 @@ button {
 }
 
 /* Single-Viewport App Shell */
+html.app-booting .app-shell {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.app-boot-initial .stage-panel {
+  animation: none;
+}
+
 .app-shell {
   position: relative;
   z-index: 4;
@@ -314,6 +323,8 @@ button {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  opacity: 1;
+  transition: opacity 220ms var(--ease-out);
 }
 
 /* Header: centered standalone buttons, no shared bar or wrapper background */

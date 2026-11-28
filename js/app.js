@@ -3,6 +3,7 @@
 
   var LANG_STORAGE_KEY = "nebula_lang";
   var DRAFT_STORAGE_KEY = "nebula_draft_preview_json";
+  var CONTENT_CACHE_KEY = "nebula_content_cache_json";
   var VIEW_ORDER = ["overview", "creators", "showings"];
 
   var FALLBACK_CONTENT = {
@@ -771,6 +772,7 @@
 
     document.querySelectorAll("[data-view-target]").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        document.documentElement.classList.remove("app-boot-initial");
         switchView(btn.getAttribute("data-view-target"));
       });
     });
@@ -875,6 +877,9 @@
       .then(function (json) {
         if (json && typeof json === "object" && !Array.isArray(json)) {
           appData = json;
+          try {
+            localStorage.setItem(CONTENT_CACHE_KEY, JSON.stringify(json));
+          } catch (e) { /* ignore */ }
         }
       })
       .catch(function () {
@@ -980,10 +985,20 @@
     });
   }
 
+  function waitForFonts() {
+    if (!document.fonts || !document.fonts.ready) {
+      return Promise.resolve();
+    }
+    return Promise.race([
+      document.fonts.ready,
+      new Promise(function (resolve) { setTimeout(resolve, 350); })
+    ]);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     setupInteractions();
     initCustomTooltips();
-    initialDataPromise.then(function () {
+    Promise.all([initialDataPromise, waitForFonts()]).then(function () {
       var savedLang = null;
       try {
         savedLang = localStorage.getItem(LANG_STORAGE_KEY);
@@ -995,6 +1010,13 @@
       }
       renderAll(initialLang);
       switchView(currentView);
+      requestAnimationFrame(function () {
+        clearTimeout(window._nebulaBootFallbackTimer);
+        document.documentElement.classList.remove("app-booting");
+        setTimeout(function () {
+          document.documentElement.classList.remove("app-boot-initial");
+        }, 260);
+      });
     });
   });
 })();
