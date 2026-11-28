@@ -392,7 +392,7 @@
     }
   }
 
-  function switchView(viewId) {
+  function switchView(viewId, animate) {
     if (VIEW_ORDER.indexOf(viewId) === -1) viewId = "overview";
     currentView = viewId;
 
@@ -401,6 +401,11 @@
       var active = panel.id === "view-" + viewId;
       panel.hidden = !active;
       panel.classList.toggle("is-active", active);
+      panel.classList.remove("is-entering");
+      if (active && animate) {
+        void panel.offsetWidth;
+        panel.classList.add("is-entering");
+      }
     });
 
     var tabs = cachedNavTabs || document.querySelectorAll("[data-view-target].nav-tab");
@@ -772,8 +777,7 @@
 
     document.querySelectorAll("[data-view-target]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        document.documentElement.classList.remove("app-boot-initial");
-        switchView(btn.getAttribute("data-view-target"));
+        switchView(btn.getAttribute("data-view-target"), true);
       });
     });
 
@@ -986,19 +990,30 @@
   }
 
   function waitForFonts() {
-    if (!document.fonts || !document.fonts.ready) {
+    if (!document.fonts) {
       return Promise.resolve();
     }
+    var sample = "AaАа01";
+    var explicitLoads = typeof document.fonts.load === "function"
+      ? Promise.all([
+          document.fonts.load('500 16px "Jost"', sample),
+          document.fonts.load('300 16px "Manrope"', sample),
+          document.fonts.load('400 16px "Manrope"', sample),
+          document.fonts.load('500 16px "Manrope"', sample),
+          document.fonts.load('400 14px "JetBrains Mono"', sample)
+        ]).catch(function () { /* ignore */ })
+      : Promise.resolve();
+
     return Promise.race([
-      document.fonts.ready,
-      new Promise(function (resolve) { setTimeout(resolve, 350); })
+      Promise.all([document.fonts.ready, explicitLoads]),
+      new Promise(function (resolve) { setTimeout(resolve, 600); })
     ]);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     setupInteractions();
     initCustomTooltips();
-    Promise.all([initialDataPromise, waitForFonts()]).then(function () {
+    initialDataPromise.then(function () {
       var savedLang = null;
       try {
         savedLang = localStorage.getItem(LANG_STORAGE_KEY);
@@ -1009,13 +1024,17 @@
         window.NebulaBackground.updateConfig(appData.settings.nebula);
       }
       renderAll(initialLang);
-      switchView(currentView);
+      switchView(currentView, false);
+      if (document.body) {
+        void document.body.offsetHeight;
+      }
+      return waitForFonts();
+    }).then(function () {
       requestAnimationFrame(function () {
-        clearTimeout(window._nebulaBootFallbackTimer);
-        document.documentElement.classList.remove("app-booting");
-        setTimeout(function () {
-          document.documentElement.classList.remove("app-boot-initial");
-        }, 260);
+        requestAnimationFrame(function () {
+          clearTimeout(window._nebulaBootFallbackTimer);
+          document.documentElement.classList.remove("app-booting");
+        });
       });
     });
   });
