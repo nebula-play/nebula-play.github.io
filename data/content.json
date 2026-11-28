@@ -8,8 +8,8 @@
         "description": "A metaphysical dramedy about two parents, a quantumograph malfunction, and a child of probability."
       },
       "ru": {
-        "title": "ТУМАННОСТЬ — Метафизическая сай-фай пьеса Александра Терехова",
-        "description": "Пьеса, вдохновлённая творчеством Рэя Брэдбери. Метафизическая драмедия о родителях и ребёнке в квантовой суперпозиции."
+        "title": "NEBULA · A Sci-Fi Play by Alex Terex",
+        "description": "A metaphysical dramedy about two parents, a quantumograph malfunction, and a child of probability."
       }
     },
     "nebula": {
@@ -166,7 +166,7 @@
         "visible": true,
         "dateLabel": {
           "en": "November 2026",
-          "ru": "2026"
+          "ru": "Ноябрь 2026"
         },
         "city": {
           "en": "Warsaw",
