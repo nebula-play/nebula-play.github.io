@@ -155,7 +155,12 @@
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
   gl.linkProgram(program);
+  gl.detachShader(program, vs);
+  gl.detachShader(program, fs);
+  gl.deleteShader(vs);
+  gl.deleteShader(fs);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    gl.deleteProgram(program);
     canvas.style.display = "none";
     return;
   }
@@ -215,15 +220,27 @@
     gl.uniform3fv(uniforms.roseColor, state.roseColor);
   }
 
+  var winW = Math.max(1, window.innerWidth);
+  var winH = Math.max(1, window.innerHeight);
+
   function resize() {
+    winW = Math.max(1, window.innerWidth);
+    winH = Math.max(1, window.innerHeight);
     var scale = 0.22;
-    var width = Math.min(300, Math.max(140, Math.round(window.innerWidth * scale)));
-    var height = Math.min(195, Math.max(90, Math.round(window.innerHeight * scale)));
+    var width = Math.min(300, Math.max(140, Math.round(winW * scale)));
+    var height = Math.min(195, Math.max(90, Math.round(winH * scale)));
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
       canvas.height = height;
       gl.viewport(0, 0, width, height);
       gl.uniform2f(uniforms.resolution, width, height);
+    }
+  }
+
+  function scheduleLoop() {
+    if (!reducedMotion && !rafId && !document.hidden) {
+      lastTick = performance.now();
+      rafId = requestAnimationFrame(render);
     }
   }
 
@@ -238,9 +255,10 @@
   }, { passive: true });
 
   window.addEventListener("pointermove", function (e) {
-    if (reducedMotion || state.cursorInfluence <= 0) return;
-    targetMouse.x = e.clientX / Math.max(1, window.innerWidth);
-    targetMouse.y = 1.0 - e.clientY / Math.max(1, window.innerHeight);
+    if (document.hidden || reducedMotion || state.cursorInfluence <= 0) return;
+    targetMouse.x = e.clientX / winW;
+    targetMouse.y = 1.0 - e.clientY / winH;
+    scheduleLoop();
   }, { passive: true });
 
   var elapsedTime = 0;
@@ -256,27 +274,40 @@
   }
 
   function render(now) {
-    if (!reducedMotion && !document.hidden) {
-      rafId = requestAnimationFrame(render);
-    } else {
-      rafId = null;
-    }
+    rafId = null;
 
     /* Gentle ~30fps cap keeps all devices silky smooth & cool */
-    if (now - lastRender < 32 && !reducedMotion) return;
+    if (now - lastRender < 32 && !reducedMotion) {
+      if (!document.hidden) rafId = requestAnimationFrame(render);
+      return;
+    }
     lastRender = now;
 
     var dt = Math.min(0.08, Math.max(0.001, (now - lastTick) / 1000));
     lastTick = now;
 
+    var moving = false;
     if (!reducedMotion) {
-      elapsedTime += dt * state.speed;
-      currentMouse.x += (targetMouse.x - currentMouse.x) * 0.05;
-      currentMouse.y += (targetMouse.y - currentMouse.y) * 0.05;
-      currentPhase += (targetPhase - currentPhase) * 0.04;
+      if (state.speed > 0) {
+        elapsedTime += dt * state.speed;
+        moving = true;
+      }
+      var dx = targetMouse.x - currentMouse.x;
+      var dy = targetMouse.y - currentMouse.y;
+      var dp = targetPhase - currentPhase;
+      if (Math.abs(dx) > 0.0005 || Math.abs(dy) > 0.0005 || Math.abs(dp) > 0.0005) {
+        currentMouse.x += dx * 0.05;
+        currentMouse.y += dy * 0.05;
+        currentPhase += dp * 0.04;
+        moving = true;
+      }
     }
 
     drawFrame(elapsedTime);
+
+    if (!reducedMotion && !document.hidden && moving) {
+      rafId = requestAnimationFrame(render);
+    }
   }
 
   document.addEventListener("visibilitychange", function () {
@@ -331,6 +362,9 @@
       uploadStaticUniforms();
       if (reducedMotion) {
         drawFrame(elapsedTime);
+      } else {
+        drawFrame(elapsedTime);
+        scheduleLoop();
       }
     },
     setViewPhase: function (index) {
@@ -338,6 +372,8 @@
       if (reducedMotion) {
         currentPhase = targetPhase;
         drawFrame(elapsedTime);
+      } else {
+        scheduleLoop();
       }
     }
   };

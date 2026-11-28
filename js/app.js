@@ -157,9 +157,27 @@
   var cachedPanels = null;
   var cachedNavTabs = null;
   var cachedViewport = null;
+  var cachedI18nNodes = null;
+  var cachedLangOptions = null;
+  var cachedMeta = null;
 
   function byId(id) {
     return document.getElementById(id);
+  }
+
+  function sanitizeParsedJson(val) {
+    if (Array.isArray(val)) {
+      return val.map(sanitizeParsedJson);
+    }
+    if (val && typeof val === "object") {
+      var clean = {};
+      Object.keys(val).forEach(function (k) {
+        if (k === "__proto__" || k === "constructor" || k === "prototype") return;
+        clean[k] = sanitizeParsedJson(val[k]);
+      });
+      return clean;
+    }
+    return val;
   }
 
   function t(value, lang) {
@@ -182,10 +200,10 @@
     if (!url || typeof url !== "string") return "";
     var trimmed = url.trim();
     if (!trimmed || /[\u0000-\u001f\u007f]/.test(trimmed)) return "";
-    // Block protocol-relative URLs (//evil.com) and path traversal
-    if (trimmed.indexOf("//") === 0) return "";
+    // Block protocol-relative URLs (//evil.com, /\evil.com), backslashes, and path traversal
+    if (trimmed.indexOf("//") === 0 || trimmed.indexOf("\\") !== -1) return "";
     if (trimmed[0] === "#" || trimmed.indexOf("./") === 0 || (trimmed[0] === "/" && trimmed[1] !== "/")) {
-      return trimmed;
+      return trimmed.indexOf("..") === -1 ? trimmed : "";
     }
     if (trimmed.indexOf("assets/") === 0 && trimmed.indexOf("..") === -1) {
       return trimmed;
@@ -426,20 +444,22 @@
   function applySeo(lang) {
     var seo = appData.settings && appData.settings.seo ? appData.settings.seo[lang] : null;
     if (seo) {
+      var meta = cachedMeta || {
+        ogTitle: document.querySelector('meta[property="og:title"]'),
+        twTitle: document.querySelector('meta[name="twitter:title"]'),
+        desc: document.querySelector('meta[name="description"]'),
+        ogDesc: document.querySelector('meta[property="og:description"]'),
+        twDesc: document.querySelector('meta[name="twitter:description"]')
+      };
       if (seo.title) {
         document.title = seo.title;
-        var ogTitle = document.querySelector('meta[property="og:title"]');
-        if (ogTitle) ogTitle.setAttribute("content", seo.title);
-        var twTitle = document.querySelector('meta[name="twitter:title"]');
-        if (twTitle) twTitle.setAttribute("content", seo.title);
+        if (meta.ogTitle) meta.ogTitle.setAttribute("content", seo.title);
+        if (meta.twTitle) meta.twTitle.setAttribute("content", seo.title);
       }
       if (seo.description) {
-        var desc = document.querySelector('meta[name="description"]');
-        if (desc) desc.setAttribute("content", seo.description);
-        var ogDesc = document.querySelector('meta[property="og:description"]');
-        if (ogDesc) ogDesc.setAttribute("content", seo.description);
-        var twDesc = document.querySelector('meta[name="twitter:description"]');
-        if (twDesc) twDesc.setAttribute("content", seo.description);
+        if (meta.desc) meta.desc.setAttribute("content", seo.description);
+        if (meta.ogDesc) meta.ogDesc.setAttribute("content", seo.description);
+        if (meta.twDesc) meta.twDesc.setAttribute("content", seo.description);
       }
     }
     document.documentElement.lang = lang;
@@ -448,7 +468,8 @@
   function renderNavAndFooter(lang) {
     var ui = appData.ui || FALLBACK_CONTENT.ui;
 
-    document.querySelectorAll("[data-i18n]").forEach(function (node) {
+    var i18nNodes = cachedI18nNodes || document.querySelectorAll("[data-i18n]");
+    i18nNodes.forEach(function (node) {
       var path = node.getAttribute("data-i18n").split(".");
       var cur = ui;
       for (var i = 0; i < path.length; i++) {
@@ -763,7 +784,7 @@
       currentEl.textContent = lang.toUpperCase();
     }
 
-    document.querySelectorAll(".lang-option").forEach(function (btn) {
+    (cachedLangOptions || document.querySelectorAll(".lang-option")).forEach(function (btn) {
       var active = btn.dataset.lang === lang;
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-checked", active ? "true" : "false");
@@ -774,8 +795,17 @@
     cachedPanels = document.querySelectorAll(".stage-panel");
     cachedNavTabs = document.querySelectorAll("[data-view-target].nav-tab");
     cachedViewport = document.querySelector(".stage-viewport");
+    cachedI18nNodes = document.querySelectorAll("[data-i18n]");
+    cachedLangOptions = document.querySelectorAll(".lang-option");
+    cachedMeta = {
+      ogTitle: document.querySelector('meta[property="og:title"]'),
+      twTitle: document.querySelector('meta[name="twitter:title"]'),
+      desc: document.querySelector('meta[name="description"]'),
+      ogDesc: document.querySelector('meta[property="og:description"]'),
+      twDesc: document.querySelector('meta[name="twitter:description"]')
+    };
 
-    document.querySelectorAll("[data-view-target]").forEach(function (btn) {
+    cachedNavTabs.forEach(function (btn) {
       btn.addEventListener("click", function () {
         switchView(btn.getAttribute("data-view-target"), true);
       });
@@ -856,29 +886,91 @@
     }
   }
 
+  function resolveInitialLang() {
+    var savedLang = null;
+    try {
+      savedLang = localStorage.getItem(LANG_STORAGE_KEY);
+    } catch (e) { /* ignore */ }
+    var defaultLang = (appData.settings && appData.settings.defaultLang) || "en";
+    return savedLang === "ru" || savedLang === "en" ? savedLang : defaultLang;
+  }
+
+  function applyAppContent(nextData) {
+    appData = nextData;
+    if (window.NebulaBackground && appData.settings && appData.settings.nebula) {
+      window.NebulaBackground.updateConfig(appData.settings.nebula);
+    }
+    renderAll(resolveInitialLang());
+  }
+
+  function fetchContentText() {
+    if (window._nebulaContentFetch) {
+      return window._nebulaContentFetch;
+    }
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { controller.abort(); }, 8000) : 0;
+    return fetch("data/content.json", {
+      cache: "no-cache",
+      signal: controller ? controller.signal : undefined
+    }).then(function (res) {
+      clearTimeout(timer);
+      if (!res.ok) throw new Error("Failed to load content.json");
+      return res.text();
+    }).catch(function (err) {
+      clearTimeout(timer);
+      throw err;
+    });
+  }
+
   function loadInitialData() {
     var params = new URLSearchParams(window.location.search);
     if (params.get("preview") === "draft") {
       try {
         var draftRaw = localStorage.getItem(DRAFT_STORAGE_KEY);
         if (draftRaw) {
-          var parsedDraft = JSON.parse(draftRaw);
+          var parsedDraft = sanitizeParsedJson(JSON.parse(draftRaw));
           if (parsedDraft && typeof parsedDraft === "object" && !Array.isArray(parsedDraft)) {
             appData = parsedDraft;
             var banner = byId("preview-banner");
             if (banner) banner.hidden = false;
-            return Promise.resolve();
+            return { immediate: true, refreshPromise: null };
           }
         }
       } catch (e) { /* fall through */ }
     }
 
-    return fetch("data/content.json", { cache: "no-cache" })
-      .then(function (res) {
-        if (!res.ok) throw new Error("Failed to load content.json");
-        return res.json();
-      })
-      .then(function (json) {
+    var bootCached = window._nebulaBootCache;
+    var bootCachedRaw = window._nebulaBootCacheRaw || "";
+    if (bootCached && typeof bootCached === "object" && !Array.isArray(bootCached)) {
+      appData = sanitizeParsedJson(bootCached);
+      var refreshPromise = window.location.protocol === "file:"
+        ? null
+        : fetchContentText()
+          .then(function (rawText) {
+            var parsed = sanitizeParsedJson(JSON.parse(rawText));
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+            var normalizedRaw = JSON.stringify(parsed);
+            if (normalizedRaw !== bootCachedRaw) {
+              try {
+                localStorage.setItem(CONTENT_CACHE_KEY, normalizedRaw);
+              } catch (e) { /* ignore */ }
+              return parsed;
+            }
+            return null;
+          })
+          .catch(function () {
+            return null;
+          });
+      return { immediate: true, refreshPromise: refreshPromise };
+    }
+
+    if (window.location.protocol === "file:") {
+      return { immediate: true, refreshPromise: null };
+    }
+
+    var networkPromise = fetchContentText()
+      .then(function (rawText) {
+        var json = sanitizeParsedJson(JSON.parse(rawText));
         if (json && typeof json === "object" && !Array.isArray(json)) {
           appData = json;
           try {
@@ -889,27 +981,33 @@
       .catch(function () {
         appData = FALLBACK_CONTENT;
       });
-  }
 
-  var initialDataPromise = loadInitialData();
+    return { immediate: false, refreshPromise: networkPromise };
+  }
 
   function initCustomTooltips() {
     if (window._nebulaSiteTooltipsInit) return;
     window._nebulaSiteTooltipsInit = true;
 
-    var tip = document.createElement("div");
-    tip.className = "nebula-tooltip";
-    tip.setAttribute("role", "tooltip");
-    tip.setAttribute("aria-hidden", "true");
-    document.body.appendChild(tip);
-
+    var tip = null;
     var activeTarget = null;
     var showTimer = null;
+
+    function ensureTooltipEl() {
+      if (tip) return tip;
+      tip = document.createElement("div");
+      tip.className = "nebula-tooltip";
+      tip.setAttribute("role", "tooltip");
+      tip.setAttribute("aria-hidden", "true");
+      document.body.appendChild(tip);
+      return tip;
+    }
 
     function hideTooltip() {
       clearTimeout(showTimer);
       showTimer = null;
       activeTarget = null;
+      if (!tip) return;
       tip.classList.remove("is-visible", "is-below");
       tip.setAttribute("aria-hidden", "true");
     }
@@ -919,11 +1017,12 @@
       var text = target.getAttribute("data-tooltip");
       if (!text) return;
 
-      tip.textContent = text;
-      tip.classList.remove("is-below");
+      var tipEl = ensureTooltipEl();
+      tipEl.textContent = text;
+      tipEl.classList.remove("is-below");
       var rect = target.getBoundingClientRect();
-      var tipW = tip.offsetWidth;
-      var tipH = tip.offsetHeight;
+      var tipW = tipEl.offsetWidth;
+      var tipH = tipEl.offsetHeight;
 
       var top = rect.top - tipH - 8;
       var below = false;
@@ -935,11 +1034,11 @@
       var maxLeft = Math.max(10, window.innerWidth - tipW - 10);
       left = Math.max(10, Math.min(maxLeft, left));
 
-      tip.style.left = Math.round(left) + "px";
-      tip.style.top = Math.round(top) + "px";
-      tip.classList.toggle("is-below", below);
-      tip.setAttribute("aria-hidden", "false");
-      tip.classList.add("is-visible");
+      tipEl.style.left = Math.round(left) + "px";
+      tipEl.style.top = Math.round(top) + "px";
+      tipEl.classList.toggle("is-below", below);
+      tipEl.setAttribute("aria-hidden", "false");
+      tipEl.classList.add("is-visible");
     }
 
     function scheduleShow(target, delayMs) {
@@ -999,43 +1098,47 @@
           document.fonts.load('500 16px "Jost"', sample),
           document.fonts.load('300 16px "Manrope"', sample),
           document.fonts.load('400 16px "Manrope"', sample),
-          document.fonts.load('500 16px "Manrope"', sample),
-          document.fonts.load('400 14px "JetBrains Mono"', sample)
+          document.fonts.load('600 16px "Manrope"', sample)
         ]).catch(function () { /* ignore */ })
       : Promise.resolve();
 
     return Promise.race([
       Promise.all([document.fonts.ready, explicitLoads]),
-      new Promise(function (resolve) { setTimeout(resolve, 600); })
+      new Promise(function (resolve) { setTimeout(resolve, 350); })
     ]);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     setupInteractions();
     initCustomTooltips();
-    initialDataPromise.then(function () {
-      var savedLang = null;
-      try {
-        savedLang = localStorage.getItem(LANG_STORAGE_KEY);
-      } catch (e) { /* ignore */ }
-      var defaultLang = (appData.settings && appData.settings.defaultLang) || "en";
-      var initialLang = savedLang === "ru" || savedLang === "en" ? savedLang : defaultLang;
-      if (window.NebulaBackground && appData.settings && appData.settings.nebula) {
-        window.NebulaBackground.updateConfig(appData.settings.nebula);
-      }
-      renderAll(initialLang);
-      switchView(currentView, false);
-      if (document.body) {
-        void document.body.offsetHeight;
-      }
-      return waitForFonts();
-    }).then(function () {
-      requestAnimationFrame(function () {
+    var bootState = loadInitialData();
+
+    function revealShell() {
+      return waitForFonts().then(function () {
         requestAnimationFrame(function () {
           clearTimeout(window._nebulaBootFallbackTimer);
           document.documentElement.classList.remove("app-booting");
         });
       });
-    });
+    }
+
+    if (bootState.immediate) {
+      applyAppContent(appData);
+      switchView(currentView, false);
+      revealShell();
+      if (bootState.refreshPromise) {
+        bootState.refreshPromise.then(function (freshData) {
+          if (freshData) {
+            applyAppContent(freshData);
+          }
+        });
+      }
+    } else {
+      bootState.refreshPromise.then(function () {
+        applyAppContent(appData);
+        switchView(currentView, false);
+        return revealShell();
+      });
+    }
   });
 })();

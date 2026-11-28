@@ -275,6 +275,7 @@ button {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  contain: strict;
   background:
     radial-gradient(circle at 24% 34%, rgba(244, 104, 37, 0.32) 0%, transparent 48%),
     radial-gradient(circle at 76% 38%, rgba(34, 230, 240, 0.3) 0%, transparent 50%),
@@ -292,6 +293,8 @@ button {
   z-index: 1;
   pointer-events: none;
   display: block;
+  contain: strict;
+  will-change: transform;
   filter: blur(14px) saturate(1.24);
   transform: scale(1.06);
   transform-origin: center;
@@ -302,6 +305,7 @@ button {
   inset: 0;
   z-index: 3;
   pointer-events: none;
+  contain: strict;
   background: radial-gradient(circle at 50% 45%, rgba(4, 5, 10, 0.1) 0%, rgba(4, 5, 10, 0.5) 100%);
 }
 
