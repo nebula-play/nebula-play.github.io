@@ -412,17 +412,25 @@
 
   function switchView(viewId, animate) {
     if (VIEW_ORDER.indexOf(viewId) === -1) viewId = "overview";
+    if (animate && currentView === viewId) return;
     currentView = viewId;
+
+    var viewport = cachedViewport || document.querySelector(".stage-viewport");
+    if (viewport) viewport.scrollTop = 0;
 
     var panels = cachedPanels || document.querySelectorAll(".stage-panel");
     panels.forEach(function (panel) {
       var active = panel.id === "view-" + viewId;
-      panel.hidden = !active;
-      panel.classList.toggle("is-active", active);
       panel.classList.remove("is-entering");
-      if (active && animate) {
-        void panel.offsetWidth;
-        panel.classList.add("is-entering");
+      if (active) {
+        if (animate) {
+          panel.classList.add("is-entering");
+        }
+        panel.hidden = false;
+        panel.classList.add("is-active");
+      } else {
+        panel.hidden = true;
+        panel.classList.remove("is-active");
       }
     });
 
@@ -432,9 +440,6 @@
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-selected", active ? "true" : "false");
     });
-
-    var viewport = cachedViewport || document.querySelector(".stage-viewport");
-    if (viewport) viewport.scrollTop = 0;
 
     if (window.NebulaBackground && typeof window.NebulaBackground.setViewPhase === "function") {
       window.NebulaBackground.setViewPhase(VIEW_ORDER.indexOf(viewId));
@@ -574,7 +579,10 @@
         var img = document.createElement("img");
         img.src = photoUrl;
         img.alt = namePlain;
-        img.loading = "lazy";
+        img.width = 84;
+        img.height = 84;
+        img.loading = "eager";
+        img.decoding = "sync";
         img.setAttribute("referrerpolicy", "no-referrer");
         img.addEventListener("error", renderMonogram, { once: true });
         media.appendChild(img);
@@ -738,7 +746,8 @@
           var imgEl = document.createElement("img");
           imgEl.src = photoSrc;
           imgEl.alt = stripInlineLinks(t(item.title, lang)) || "News photo";
-          imgEl.loading = "lazy";
+          imgEl.loading = "eager";
+          imgEl.decoding = "async";
           imgEl.setAttribute("referrerpolicy", "no-referrer");
           imgEl.addEventListener("error", function () {
             photoWrap.remove();
@@ -1098,13 +1107,15 @@
           document.fonts.load('500 16px "Jost"', sample),
           document.fonts.load('300 16px "Manrope"', sample),
           document.fonts.load('400 16px "Manrope"', sample),
-          document.fonts.load('600 16px "Manrope"', sample)
+          document.fonts.load('600 16px "Manrope"', sample),
+          document.fonts.load('400 14px "JetBrains Mono"', sample),
+          document.fonts.load('500 14px "JetBrains Mono"', sample)
         ]).catch(function () { /* ignore */ })
       : Promise.resolve();
 
     return Promise.race([
       Promise.all([document.fonts.ready, explicitLoads]),
-      new Promise(function (resolve) { setTimeout(resolve, 350); })
+      new Promise(function (resolve) { setTimeout(resolve, 450); })
     ]);
   }
 
