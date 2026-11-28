@@ -611,14 +611,14 @@ html.app-booting .app-shell {
 }
 
 .hero-subtitle {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   max-width: 100%;
-  font-size: clamp(0.94rem, 3.8vw, 1.12rem);
+  font-size: clamp(1.22rem, 4.95vw, 1.46rem);
   font-weight: 300;
-  line-height: 1.44;
+  line-height: 1.38;
   color: rgba(255, 255, 255, 0.92);
-  letter-spacing: 0.025em;
-  padding-left: 0.025em;
+  letter-spacing: 0.02em;
+  padding-left: 0.02em;
   text-wrap: balance;
 }
 
